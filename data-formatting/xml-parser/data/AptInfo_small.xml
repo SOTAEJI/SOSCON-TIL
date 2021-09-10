@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<response>
+	<header>
+		<resultCode>00</resultCode>
+		<resultMsg>NORMAL SERVICE.</resultMsg>
+	</header>
+	<body>
+		<items>
+			<item>
+				<건축년도>1997</건축년도>
+				<법정동> 평창동</법정동>
+				<아파트>갑을</아파트>
+				<지번>595</지번>
+				<지역코드>11110</지역코드>
+				<img>평창동갑을.jpg</img>
+			</item>
+			<item>
+				<건축년도>2000</건축년도>
+				<법정동> 무악동</법정동>
+				<아파트>현대</아파트>
+				<지번>82</지번>
+				<지역코드>11110</지역코드>
+				<img>무악동현대.jpg</img>
+			</item>
+			<item>
+				<건축년도>2008</건축년도>
+				<법정동> 무악동</법정동>
+				<아파트>인왕산아이파크</아파트>
+				<지번>60</지번>
+				<지역코드>11110</지역코드>
+				<img>무악동인왕산아이파크.jpg</img>
+			</item>
+		</items>
+		<numOfRows>10</numOfRows>
+		<pageNo>1</pageNo>
+		<totalCount>57</totalCount>
+	</body>
+</response>
