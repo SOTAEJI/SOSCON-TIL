@@ -1,0 +1,87 @@
+[
+    {
+        "id": "233424e17ad4d3d8",
+        "type": "http in",
+        "z": "32fd1cb9d72f6187",
+        "name": "식품API",
+        "url": "/foodApiTest",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 140,
+        "y": 160,
+        "wires": [
+            [
+                "c247cc0a711a33b6"
+            ]
+        ]
+    },
+    {
+        "id": "c247cc0a711a33b6",
+        "type": "http request",
+        "z": "32fd1cb9d72f6187",
+        "name": "식품API",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://apis.data.go.kr/1470000/FoodNtrIrdntInfoService/getFoodNtrItdntList?ServiceKey=kfqZ%2FiskClrxT7pPg%2Bckg8IWBfH4%2BRgaGCYrLDmY8mwLiF%2B9lJMi40w745v8MleT236obP03mgNItH663WuKTA%3D%3D&desc_kor=%EB%B0%94%EB%82%98%EB%82%98%EC%B9%A9",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 360,
+        "y": 160,
+        "wires": [
+            [
+                "11c2638832866b60"
+            ]
+        ]
+    },
+    {
+        "id": "1461690a662aa80c",
+        "type": "debug",
+        "z": "32fd1cb9d72f6187",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 930,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "0bcd32f0b997675b",
+        "type": "html-out",
+        "z": "32fd1cb9d72f6187",
+        "name": "Chart",
+        "base": "chart",
+        "datatype": "msg",
+        "datavalue": "payload",
+        "brand": "",
+        "video": "",
+        "html": "<h1>test!!!</h1>\n{{ msg }}",
+        "frames": [],
+        "links": {},
+        "x": 914,
+        "y": 139,
+        "wires": []
+    },
+    {
+        "id": "11c2638832866b60",
+        "type": "xml-formatter-food-test",
+        "z": "32fd1cb9d72f6187",
+        "x": 600,
+        "y": 160,
+        "wires": [
+            [
+                "0bcd32f0b997675b",
+                "1461690a662aa80c"
+            ]
+        ]
+    }
+]
