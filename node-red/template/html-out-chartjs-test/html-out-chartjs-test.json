@@ -1,0 +1,62 @@
+[
+    {
+        "id": "e47fc0abd824fb84",
+        "type": "tab",
+        "label": "html-out-chartjs-test",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "c59c4ca27cfa5ecb",
+        "type": "http in",
+        "z": "e47fc0abd824fb84",
+        "name": "Chart",
+        "url": "/chart",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 210,
+        "y": 160,
+        "wires": [
+            [
+                "79479c1cbd8b7ce7"
+            ]
+        ]
+    },
+    {
+        "id": "64e82f8382976ab1",
+        "type": "html-out",
+        "z": "e47fc0abd824fb84",
+        "name": "Chart",
+        "base": "chart",
+        "datatype": "msg",
+        "datavalue": "data",
+        "brand": "",
+        "video": "",
+        "html": "<h1>test!!!</h1>\n{{ msg }}",
+        "frames": [],
+        "links": {},
+        "x": 710,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "79479c1cbd8b7ce7",
+        "type": "template",
+        "z": "e47fc0abd824fb84",
+        "name": "Chart",
+        "field": "data",
+        "fieldType": "msg",
+        "format": "json",
+        "syntax": "mustache",
+        "template": "{ \n   \"type\":\"line\",\n   \"data\":{\n      \"labels\":[\n         \"신동아블루아광화문의 꿈\",\n         \"광화문풍림스페이스본(101동~105동)\",\n         \"광화문풍림스페이스본(106동)\",\n         \"경희궁의아침3단지\",\n         \"현대뜨레비앙\",\n         \"효성쥬얼리시티\",\n         \"(9-1)\",\n         \"CS타워\",\n         \"동성아파트(1동)\",\n         \"건양하늘터\",\n         \"아남1\",\n         \"두산\",\n         \"창신쌍용1\",\n         \"창신쌍용2\",\n         \"덕산\",\n         \"숭인한양LEEPS\",\n         \"종로청계힐스테이트\",\n         \"종로센트레빌\",\n         \"종로중흥S클래스\",\n         \"롯데캐슬천지인\",\n         \"삼전솔하임2차\",\n         \"경희궁자이(3단지)\",\n         \"경희궁자이(2단지)\",\n         \"경희궁자이(4단지)\",\n         \"삼성\",\n         \"엘리시아\",\n         \"삼성\",\n         \"갑을\",\n         \"현대\",\n         \"인왕산아이파크\"\n      ],\n      \"datasets\":[\n         {\n            \"label\":\"건축년도\",\n            \"data\":[\n               2007,\n               2008,\n               2008,\n               2004,\n               2003,\n               2006,\n               2004,\n               2011,\n               1999,\n               2006,\n               1995,\n               1999,\n               1992,\n               1993,\n               1999,\n               2014,\n               2009,\n               2008,\n               2013,\n               2004,\n               2012,\n               2017,\n               2017,\n               2017,\n               1998,\n               2009,\n               1998,\n               1997,\n               2000,\n               2008\n            ]\n         }\n      ]\n   },\n   \"options\":{\n      \"responsive\":true,\n      \"legend\":{\n         \"position\":\"top\"\n      },\n      \"title\":{\n         \"display\":true,\n         \"text\":\"title\"\n      }\n   }\n}",
+        "output": "json",
+        "x": 450,
+        "y": 160,
+        "wires": [
+            [
+                "64e82f8382976ab1"
+            ]
+        ]
+    }
+]
