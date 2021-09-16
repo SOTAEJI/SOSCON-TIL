@@ -9,14 +9,14 @@ Samsung Automation Studio를 활용한 Flow 및 Node 개발에 참여하기
 ```
 ssafy-5th
      └──develop
-         └──feature/formatting
-            └──feature/formatting/xml#24 (예시)
+         └──feature/formatting 
+            └──feature/xml#24 (예시)
          └──feature/drive
-            └──feature/drive/one#26 (예시)
+            └──feature/one#26 (예시)
 ```
 #### 2) Branch Naming Convetion
 1. 개발하는 기능 별로 Branch를 분기시킨다. 
-2. 분기되는 브랜치 명은 다음과 같이 짓는다. `feature/분류/개발기능#Jira이슈번호`
+2. 분기되는 브랜치 명은 다음과 같이 짓는다. `feature/개발기능#Jira이슈번호`
 
 <br>
 
