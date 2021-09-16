@@ -1,0 +1,12 @@
+{
+  "name": "node-red-contrib-excel-formatting",
+  "version": "1.0.0",
+  "node-red": {
+    "nodes": {
+      "excel-formatting": "excel-formatting.js"
+    }
+  },
+  "dependencies": {
+    "xlsx": "^0.17.2"
+  }
+}

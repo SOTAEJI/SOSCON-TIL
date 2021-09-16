@@ -1,0 +1,67 @@
+<script type="text/javascript">
+    RED.nodes.registerType('excel-formatting', {
+        category: 'function',
+        color: '#a6bbcf',
+        defaults: {
+            filename: { value: "" },
+            name: { value: "" },
+            title: { value: "" },
+            chart_type: { value: "", },
+            x_data: { value: "" },
+            x_label: { value: "" },
+            y_data: { value: "" },
+            y_label: { value: "" },
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "file.png",
+        label: function () {
+            return this.name || "excel-formatting";
+        }
+    });
+</script>
+
+<!-- 더블클릭시 나오는 부분 -->
+<script type="text/html" data-template-name="excel-formatting">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name"><br>
+    </div>
+    <div class="form-row">
+        <label for="node-input-filename"><i class="fa fa-tag"></i> FileName</label>
+        <input type="text" id="node-input-filename" placeholder="FileName"><br>
+    </div>
+    <div class="form-row">
+        <label for="node-input-title"><i class="fa fa-tag"></i> title</label>
+        <input type="text" id="node-input-title" placeholder="title">
+    </div>
+    <div class="form-row">
+        <label for="node-input-chart_type"><i class="fa fa-tag"></i> type</label>
+        <select id="node-input-chart_type">
+            <option value="line" selected>line chart</option>
+            <option value="bar">bar chart</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-x_data"><i class="fa fa-tag"></i> x_data</label>
+        <input type="text" id="node-input-x_data" placeholder="x_data"><br>
+    </div>
+    <div class="form-row">
+        <label for="node-input-x_label"><i class="fa fa-tag"></i> x_label</label>
+        <input type="text" id="node-input-x_label" placeholder="x_label"><br>
+    </div>
+    <div class="form-row">
+        <label for="node-input-y_data"><i class="fa fa-tag"></i> y_data</label>
+        <input type="text" id="node-input-y_data" placeholder="y_data">
+    </div>
+    <div class="form-row">
+        <label for="node-input-y_label"><i class="fa fa-tag"></i> y_label</label>
+        <input type="text" id="node-input-y_label" placeholder="y_label">
+    </div>
+</script>
+
+
+<!-- 오른쪽 도움말에 나오는 부분 -->
+<script type="text/html" data-help-name="excel-formatting">
+    <p>A simple node that converts excel to javascript</p>
+</script>
