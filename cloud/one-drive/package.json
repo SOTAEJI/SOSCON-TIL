@@ -1,0 +1,20 @@
+{
+  "name": "one-drive",
+  "version": "1.0.0",
+  "description": "",
+  "main": "one-drive.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "node-red",
+    "onedrive"
+  ],
+  "author": "",
+  "license": "ISC",
+  "node-red": {
+    "nodes": {
+      "OneDrive": "one-drive.js"
+    }
+  }
+}
