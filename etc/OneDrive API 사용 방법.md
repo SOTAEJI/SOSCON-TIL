@@ -2,26 +2,21 @@
 
 # [Node-RED] OneDrive API
 
-
+<br>
 
 ## OneDrive REST API
-
 - 참고
 
   https://docs.microsoft.com/ko-kr/onedrive/developer/rest-api/?view=odsp-graph-online
 
 ## Node.js의 OneDrive API
-
 - 참고
 
   https://github.com/dkatavic/onedrive-api
 
-
+<br>
 
 ## 시작하기
-
----
-
 ### Microsoft Graph에 앱 등록
 
 1. Azure 앱 등록 페이지로 이동
@@ -35,7 +30,9 @@
 2. 새 클라이언트 암호 생성
 3. 비밀 ID 복사
 
-### Access Token 발급 (이거 따라하지 마세요...)
+<br>
+
+## ~~Access Token 발급~~ (이거 따라하지 마세요...)
 
 1. 인증 코드 받기
 
@@ -79,12 +76,9 @@ client_id={client_id}&redirect_uri={redirect_uri}&client_secret={client_secret}
   - InvalidAuthenticationToken CompactToken parsing failed with error code: 80049217 → "Bearer " 주의
   - InvalidAuthenticationToken Access token validation failure. Invalid audience. → **`Azure Active Directory전용 토큰을 발급했었음...(~~미친~~) Microsoft Graph 토큰 발급 시도`**
 
-
+<br>
 
 ## Microsoft Graph (이게 진짜)
-
----
-
 ### Step 1. Get an authorization code
 
 ```jsx
@@ -141,12 +135,9 @@ Authorization: {access_token}
   - BadRequest, Entity only allows writes with a JSON Content-Type header. → 경로 설정 제대로. ex) https://graph.microsoft.com/v1.0/me/drive/items/root:/tmp/new.csv:/content
   - 에러는 안나는데 파일 업로드가 안되는 현상... → 코드 수정 완료
 
-
+<br>
 
 ## 기존 OneDrive 노드
-
----
-
 mrvik/node-red-contrib-onedrive
 
 ### download file
