@@ -47,10 +47,10 @@ types = {
     1. Sprint 단위 : 매주 월 AM 9:00 ~ 금 PM 6:00
     2. Sprint 이름 : N주차
     3. Issue Type : 
-        1. `Epic` : 사전학습, 기획, 개발, 발표준비 etc…
-        2. `Story` : 개발할 큰 주제 ex) 원드라이브 개발 -> Git 브랜치 이름 : `feature/drive/one#36`
-        3. `Subtask` : 개발할 주제 하위 테스크에 구체적 개발 내용 ex) 원드라이브 Access Key 발급 -> `Git commit message: #S05P21005-37` 
-        4. `Task` : 개발 외의 문서 작업, 발표 준비, etc 
+        1. Epic : 사전학습, 기획, 개발, 발표준비 etc…
+        2. Story : 개발할 큰 주제 ex) 원드라이브 개발 -> Git 브랜치 이름 : feature/drive/one#36
+        3. Subtask : 개발할 주제 하위 테스크에 구체적 개발 내용 ex) 원드라이브 Access Key 발급 -> Git commit message: #S05P21005-37
+        4. Task : 개발 외의 문서 작업, 발표 준비, etc 
 
 ## 5. Daily Scrum 
     1. 아침 회의 : AM 10 미팅 종료 후 10분 
