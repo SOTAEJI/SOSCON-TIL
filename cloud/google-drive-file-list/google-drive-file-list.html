@@ -1,0 +1,68 @@
+<script type="text/javascript">
+  RED.nodes.registerType("Google Drive File List", {
+    category: "drive",
+    color: "#e6e6e6",
+    defaults: {
+      name: { value: "" },
+      clientId: { value: "" },
+      clientSecret: { value: "" },
+      refreshToken: { value: "" },
+      fileName: { value: "" },
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: "",
+    label: function () {
+      return this.name || "Google Drive";
+    },
+  });
+</script>
+
+<script type="text/html" data-template-name="Google Drive File List">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-clientId"><i class="fa fa-tag"></i> Client ID</label>
+    <input type="text" id="node-input-clientId" placeholder="Client ID" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-clientSecret"
+      ><i class="fa fa-tag"></i> Client Secret Key</label
+    >
+    <input
+      type="text"
+      id="node-input-clientSecret"
+      placeholder="Client Secret Key"
+    />
+  </div>
+  <div class="form-row">
+    <label for="node-input-refreshToken"
+      ><i class="fa fa-tag"></i> Refresh Token</label
+    >
+    <input
+      type="text"
+      id="node-input-refreshToken"
+      placeholder="Refresh Token"
+    />
+  </div>
+
+  <div class="form-row" id="node-input-fileName-row">
+    <label for="node-input-fileName"
+      ><i class="fa fa-file-text-o"></i> File Name</label
+    >
+    <input type="text" id="node-input-fileName" placeholder="example.png" />
+  </div>
+</script>
+
+<style type="text/css">
+  .form-row.flex {
+    display: flex;
+    align-items: center;
+  }
+</style>
+
+<script type="text/html" data-help-name="Google Drive File List">
+  <p>This node access Google Drive for Download or Upload API</p>
+</script>
