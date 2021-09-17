@@ -1,0 +1,92 @@
+<script type="text/javascript">
+    RED.nodes.registerType('file-convert',{
+        category: 'function',
+        color: '#a6bbcf',
+        defaults: {
+            config: {
+                value: '',
+                validate: function (val) {
+                    var isValidChartConfig = false;
+                    RED.nodes.eachNode(function (node) {
+                        if (node.id == val) {
+                            isValidChartConfig = true
+                        }
+                    })
+                    return !!val && isValidChartConfig
+                }
+            },
+            name: {value:""},
+            filename: {value:""},
+            format:{value:""},
+        },
+        inputs:1,
+        outputs:1,
+        icon: "file.png",
+        label: function() {
+            return this.name||"file-convert";
+        },
+        oneditprepare: function () {
+            var NODE = this;
+            $("#node-input-config").html('');
+            RED.nodes.eachNode(function (node) {
+                if (node.name && node.type == 'chart-config') {
+                    $("#node-input-config").append($("<option></option>").val(node.id).text(node.name + " (" + node.id + ")"));
+                }
+            });
+            $("#node-input-config").val(NODE.config);
+        },
+    });
+    RED.nodes.registerType('chart-config',{
+        category: 'function',
+        color: '#a6bbcf',
+        defaults: {
+            name: {value: "Chart Config"},
+            boarderColor: {value:""},
+            boarderWidth: {value:""},
+        },
+        icon: "file.png",
+        paletteLabel: "Chart Config",
+        label: function() {
+            return this.name;
+        }
+    });
+</script>
+
+<!-- 더블클릭시 나오는 부분 -->
+<script type="text/html" data-template-name="file-convert">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-config"><i class="fa fa-user"></i> Chart Config</label>
+        <select type="text" id="node-input-config" style="width:70%!important;"></select>
+    </div>
+</script>
+
+
+<!-- 오른쪽 도움말에 나오는 부분 -->
+<script type="text/html" data-help-name="file-convert">
+    <p>A simple node that converts the file extension</p>
+</script>
+
+<script type="text/html" data-template-name="chart-config">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-boarderColor"><i class="fa fa-tag"></i> Boarder Color</label>
+        <input type="text" id="node-input-boarderColor" placeholder="Boarder Color">
+    </div>
+    <div class="form-row">
+        <label for="node-input-boarderWidth"><i class="fa fa-tag"></i> Boarder Width</label>
+        <input type="text" id="node-input-boarderWidth" placeholder="Boarder Width">
+    </div>
+</script>
+
+
+<!-- 오른쪽 도움말에 나오는 부분 -->
+<script type="text/html" data-help-name="chart-config">
+    <p>A simple node that converts the file extension</p>
+</script>
