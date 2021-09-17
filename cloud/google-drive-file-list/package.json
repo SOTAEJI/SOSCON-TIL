@@ -1,0 +1,19 @@
+{
+  "name": "google-drive-file-list",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "node-red": {
+    "nodes": {
+      "google-drive": "google-drive-file-list.js"
+    }
+  },
+  "dependencies": {
+    "googleapis": "^85.0.0"
+  }
+}
