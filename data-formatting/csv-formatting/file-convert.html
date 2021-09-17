@@ -1,0 +1,44 @@
+<script type="text/javascript">
+    RED.nodes.registerType('file-convert',{
+        category: 'function',
+        color: '#a6bbcf',
+        defaults: {
+            name: {value:""},
+            filename: {value:""},
+            format:{value:""},
+            x_data:{value:""},
+            x_label:{value:""},
+            y_data:{value:""},
+            y_label:{value:""},
+            title:{value:""},
+            type:{value:""}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "file.png",
+        label: function() {
+            return this.name||"file-convert";
+        }
+    });
+</script>
+
+<!-- 더블클릭시 나오는 부분 -->
+<script type="text/html" data-template-name="file-convert">
+    <div class="form-row">
+        <label for="node-input-filename"><i class="fa fa-file"></i> 파일명</span></label>
+        <select type="text" id="node-input-format" style="width: 10%;">
+            <option value="csv">csv</option>
+        </select>
+        <input id="node-input-filename" type="text" placeholder="파일">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+
+<!-- 오른쪽 도움말에 나오는 부분 -->
+<script type="text/html" data-help-name="lower-case">
+    <p>A simple node that converts the file extension</p>
+</script>
