@@ -16,5 +16,9 @@
     "nodes": {
       "OneDrive": "one-drive.js"
     }
+  },
+  "dependencies": {
+    "request": "^2.88.2",
+    "request-promise-native": "^1.0.9"
   }
 }
