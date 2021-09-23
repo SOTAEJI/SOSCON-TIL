@@ -1,5 +1,5 @@
 <script type="text/javascript">
-  RED.nodes.registerType("GoogleDrive", {
+  RED.nodes.registerType("Google Drive", {
     category: "drive",
     color: "#e6e6e6",
     defaults: {
@@ -22,7 +22,6 @@
     oneditprepare: function () {
       $("#node-input-doType").on("change", function () {
         const val = $(this).val();
-
         switch (val) {
           case "download":
             $("#node-input-fileId-row").show();
@@ -38,7 +37,7 @@
   });
 </script>
 
-<script type="text/html" data-template-name="GoogleDrive">
+<script type="text/html" data-template-name="Google Drive">
   <div class="form-row">
     <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
     <input type="text" id="node-input-name" placeholder="Name" />
@@ -121,15 +120,20 @@
   }
 </style>
 
-<script type="text/html" data-help-name="GoogleDrive">
+<script type="text/html" data-help-name="Google Drive">
   <p>This node access Google Drive for Download or Upload API</p>
   <h3>Inputs</h3>
   <dl class="message-properties">
     <dt>Client ID</dt>
     <dt>Client Secret Key</dt>
     <dd>
-      먼저 이 노드를 사용하기 위해서는 Google Cloud Platform으로 이동하여 OAuth
-      클라이언트 ID를 생성해야 합니다.
+      You need to go to the google cloud platform console to get the client ID
+      and client secret key. Select your project and go to APIs & Services. And
+      create an OAuth client ID from credentials. After that, go to credentials
+      and click on OAuth client ID. Enter
+      "https://developers.google.com/oauthplayground" in Redirect URIs and click
+      the "create" button. If it was issued normally, you will be able to check
+      the client id and client secret key.
     </dd>
     <dt>Refresh Token</dt>
     <dd>
