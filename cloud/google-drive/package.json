@@ -1,5 +1,5 @@
 {
-  "name": "google-drive",
+  "name": "GoogleDrive",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -10,7 +10,7 @@
   "license": "ISC",
   "node-red": {
     "nodes": {
-      "google-drive": "google-drive.js"
+      "GoogleDrive": "501-GoogleDrive.js"
     }
   },
   "dependencies": {
