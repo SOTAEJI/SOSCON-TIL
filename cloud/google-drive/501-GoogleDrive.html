@@ -1,5 +1,5 @@
 <script type="text/javascript">
-  RED.nodes.registerType("google drive", {
+  RED.nodes.registerType("GoogleDrive", {
     category: "drive",
     color: "#e6e6e6",
     defaults: {
@@ -38,7 +38,7 @@
   });
 </script>
 
-<script type="text/html" data-template-name="google drive">
+<script type="text/html" data-template-name="GoogleDrive">
   <div class="form-row">
     <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
     <input type="text" id="node-input-name" placeholder="Name" />
@@ -121,7 +121,7 @@
   }
 </style>
 
-<script type="text/html" data-help-name="google drive">
+<script type="text/html" data-help-name="GoogleDrive">
   <p>This node access Google Drive for Download or Upload API</p>
   <h3>Inputs</h3>
   <dl class="message-properties">

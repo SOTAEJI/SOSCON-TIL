@@ -83,5 +83,5 @@ module.exports = function exportFunc(RED) {
       this.send(msg);
     });
   }
-  RED.nodes.registerType("google drive", GoogleDriveNode);
+  RED.nodes.registerType("GoogleDrive", GoogleDriveNode);
 };
