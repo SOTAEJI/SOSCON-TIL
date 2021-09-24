@@ -143,6 +143,44 @@ module.exports = function(RED) {
         }
     }
 
+    function calculateStatisticsByItems(jsonData, title, type, x_data, y_label, y_data) {
+        var totalByItems = {};
+
+        for (var row of jsonData) {
+            if (totalByItems.hasOwnProperty(row[x_data])) {
+                totalByItems[row[x_data]] += row[y_data];
+            } else {
+                totalByItems[row[x_data]] = row[y_data];
+            }
+        }
+
+        var X = (Object.keys(totalByItems));
+        var Y = (Object.values(totalByItems));
+
+        var result = {
+            type: type,
+            data: {
+                labels: X,
+                datasets: [{
+                    label: y_label,
+                    data: Y
+                }]
+            },
+            options: {
+                responsive: true,
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: title
+                }
+            }
+        }
+        return result;
+
+    }
+
     function calculateStatistics(jsonData, title, type, x_data, y_label, y_data) {
         // y데이터의 최대, 최소, 평균 세기
         var total = 0;
@@ -161,8 +199,6 @@ module.exports = function(RED) {
 
         var X = ['min', 'max', 'count', 'total', 'average'];
         var Y = [min, max, count, total, average];
-
-        console.log('min: ', min, ' max: ', max, ' count: ', count, ' total: ', total, ' average: ', average);
 
         var result = {
             type: type,
@@ -259,7 +295,8 @@ module.exports = function(RED) {
 
             console.log('config.result_data_type ', config.result_data_type);
             if (config.result_data_type === 'statistics') {
-                msg.data = calculateStatistics(jsonData, config.title, config.chart_type, config.x_data, config.y_label, config.y_data);
+                // msg.data = calculateStatistics(jsonData, config.title, config.chart_type, config.x_data, config.y_label, config.y_data);
+                msg.data = calculateStatisticsByItems(jsonData, config.title, config.chart_type, config.x_data, config.y_label, config.y_data);
 
             } else if (config.result_data_type === 'count') {
                 // count the number of x_data items
