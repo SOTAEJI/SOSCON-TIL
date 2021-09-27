@@ -43,13 +43,8 @@ types = {
 
 <br>
 
-## 3. GitHub & Jira 연동
-- 프로젝트 명과 이슈 명을 같이 표기한다.
-- ex) git commit -m "feat: add xml formatter #S05P67S125-54"
 
-<br>
-
-## 4. Jira Convention
+## 3. Jira Convention
     1. Sprint 단위 : 매주 월 AM 9:00 ~ 금 PM 6:00
     2. Sprint 이름 : N주차
     3. Issue Type : 
@@ -60,7 +55,7 @@ types = {
 
 <br>
 
-## 5. Daily Scrum 
+## 4. Daily Scrum 
     1. 아침 회의 : AM 10 미팅 종료 후 10분 
     2. 오후 회의 : PM 4 ~ 5
 
