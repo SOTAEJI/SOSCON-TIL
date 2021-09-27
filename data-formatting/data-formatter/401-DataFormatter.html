@@ -42,10 +42,61 @@
         <label for="node-input-y_label"><i class="fa fa-tag"></i> y_label</label>
         <input type="text" id="node-input-y_label" placeholder="y_label">
     </div>
+    <div class="form-row">
+        <label for="node-input-config"><i class="fa fa-user"></i> Chart Config</label>
+        <select type="text" id="node-input-config" style="width:70%!important;"></select>
+    </div>
 </script>
 
 <script type="text/html" data-help-name="data-formatter">
     <p>A simple node that converts data to json for chart.js</p>
+</script>
+
+<script type="text/html" data-template-name="chart-config">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-borderColor"><i class="fa fa-tag"></i> Border Color</label>
+        <select type="text" id="node-input-borderColor" placeholder="Border Color">
+            <option value="rgb(255, 99, 132)">red</option>
+            <option value="rgb(255, 159, 64)">orange</option>
+            <option value="rgb(255, 205, 86)">yellow</option>
+            <option value="rgb(75, 192, 192)">green</option>
+            <option value="rgb(54, 162, 235)">blue</option>
+            <option value="rgb(153, 102, 255)">purple</option>
+            <option value="rgb(201, 203, 207)">grey</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-borderWidth"><i class="fa fa-tag"></i> Border Width</label>
+        <input type="text" id="node-input-borderWidth" placeholder="Border Width">
+    </div>
+    <div class="form-row">
+        <label for="node-input-backgroundColor"><i class="fa fa-tag"></i> Background Color</label>
+        <select type="text" id="node-input-backgroundColor" placeholder="Background Color">
+            <option value="rgb(255, 99, 132)">red</option>
+            <option value="rgb(255, 159, 64)">orange</option>
+            <option value="rgb(255, 205, 86)">yellow</option>
+            <option value="rgb(75, 192, 192)">green</option>
+            <option value="rgb(54, 162, 235)">blue</option>
+            <option value="rgb(153, 102, 255)">purple</option>
+            <option value="rgb(201, 203, 207)">grey</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-yMin"><i class="fa fa-tag"></i> Y-axes Min Value</label>
+        <input type="text" id="node-input-yMin" placeholder="Min Value">
+    </div>
+    <div class="form-row">
+        <label for="node-input-yMax"><i class="fa fa-tag"></i> Y-axes Max value</label>
+        <input type="text" id="node-input-yMax" placeholder="Max Value">
+    </div>
+    <div class="form-row">
+        <label for="node-input-yStepSize"><i class="fa fa-tag"></i> Y-axes Step Size</label>
+        <input type="text" id="node-input-yStepSize" placeholder="Value Step Size">
+    </div>
 </script>
 
 <script type="text/javascript">
@@ -53,6 +104,18 @@
         category: 'function',
         color: '#a6bbcf',
         defaults: {
+            config: {
+                value: '',
+                validate: function (val) {
+                    var isValidChartConfig = false;
+                    RED.nodes.eachNode(function (node) {
+                        if (node.id == val) {
+                            isValidChartConfig = true
+                        }
+                    })
+                    return !!val && isValidChartConfig
+                }
+            },
             name: { value: "" },
             title: { value: "" },
             data_src: { value: "" },
@@ -67,6 +130,35 @@
         icon: "file.png",
         label: function () {
             return this.name || "data-formatter";
+        },
+        oneditprepare: function () {
+            var NODE = this;
+            $("#node-input-config").html('');
+            RED.nodes.eachNode(function (node) {
+                if (node.name && node.type == 'chart-config') {
+                    $("#node-input-config").append($("<option></option>").val(node.id).text(node.name + " (" + node.id + ")"));
+                }
+            });
+            $("#node-input-config").val(NODE.config);
+        },
+    });
+
+    RED.nodes.registerType('chart-config',{
+        category: 'function',
+        color: '#edbb64',
+        defaults: {
+            name: {value: "Chart Config"},
+            borderColor: {value:""},
+            borderWidth: {value:""},
+            backgroundColor: {value:""},
+            yMin: {value:0},
+            yMax: {value:null},
+            yStepSize: {value:null},
+        },
+        icon: "file.png",
+        paletteLabel: "Chart Config",
+        label: function() {
+            return this.name;
         }
     });
 </script>

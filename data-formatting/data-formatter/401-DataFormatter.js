@@ -7,10 +7,11 @@ module.exports = function (RED) {
     const he = require('he');
     var parents = [];
 
-    function JsonFormatting(jsonData, title, type, x_data, y_label, y_data) {
+    function JsonFormatting(jsonData, title, type, x_data, y_label, y_data, nodeConfig) {
         //json formatting
         var X = []
         var Y = []
+        console.log(nodeConfig)
 
         for (var row of jsonData) {
             X.push(row[x_data])
@@ -23,6 +24,9 @@ module.exports = function (RED) {
                 labels: X,
                 datasets: [{
                     label: y_label,
+                    backgroundColor: nodeConfig.backgroundColor,
+                    borderWidth: nodeConfig.borderWidth,
+                    borderColor: nodeConfig.borderColor,
                     data: Y
                 }]
             },
@@ -34,7 +38,16 @@ module.exports = function (RED) {
                 title: {
                     display: true,
                     text: title
-                }
+                },
+                // scales: {
+                //     yAxes: [{
+                //         ticks: {
+                //             min: nodeConfig.yMin,
+                //             max: nodeConfig.yMax,
+                //             stepsize: nodeConfig.yStepSize
+                //         }
+                //     }]
+                // }
             }
         }
         return result;
@@ -141,25 +154,43 @@ module.exports = function (RED) {
         }
     }
 
-    function DataFormatting(config) {
-        RED.nodes.createNode(this, config);
+    function ChartConfig(n) {
+        RED.nodes.createNode(this,n);
+		this.borderColor = n.borderColor;
+		this.borderWidth = n.borderWidth;
+        this.backgroundColor = n.backgroundColor;
+        this.yMax = n.yMax;
+        this.yMin = n.yMin;
+        this.yStepSize = n.yStepSize;
+        
+    }
+
+    function DataFormatting(n) {
+        RED.nodes.createNode(this, n);
         var node = this;
 
         node.on('input', function (msg) {
-            var type = config.data_type;
-            var jsonData = config.data_src;
+            var type = n.data_type;
+            var jsonData = n.data_src;
+            node.configId = n.config;
+            RED.nodes.eachNode(function (nn) {
+                if(node.configId==nn.id) {
+                    node.config = nn;
+                }
+            });
 
             //data parsing
-            if (type == 'xlsx') jsonData = XlsxParser(config.data_src);
-            else if (type == 'csv') jsonData = CsvParser(config.data_src);
-            else if (type == 'xml') jsonData = XmlParser(config.data_src, config.x_data);
-
+            if (type == 'xlsx') jsonData = XlsxParser(n.data_src);
+            else if (type == 'csv') jsonData = CsvParser(n.data_src);
+            else if (type == 'xml') jsonData = XmlParser(n.data_src, n.x_data);
+            
             //change json to chart.js format
-            msg.data = JsonFormatting(jsonData, config.title, config.chart_type, config.x_data, config.y_label, config.y_data);
+            msg.data = JsonFormatting(jsonData, n.title, n.chart_type, n.x_data, n.y_label, n.y_data, node.config);
             node.send(msg);
         })
     }
 
     RED.nodes.registerType("data-formatter", DataFormatting);
+    RED.nodes.registerType("chart-config", ChartConfig);
 }
 
