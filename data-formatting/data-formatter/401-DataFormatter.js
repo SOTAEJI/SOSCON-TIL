@@ -12,7 +12,8 @@ module.exports = function (RED) {
         var X = []
         var Y = []
         console.log(nodeConfig)
-
+        console.log(typeof(Number(nodeConfig.yMin)))
+        
         for (var row of jsonData) {
             X.push(row[x_data])
             Y.push(row[y_data])
@@ -39,15 +40,16 @@ module.exports = function (RED) {
                     display: true,
                     text: title
                 },
-                // scales: {
-                //     yAxes: [{
-                //         ticks: {
-                //             min: nodeConfig.yMin,
-                //             max: nodeConfig.yMax,
-                //             stepsize: nodeConfig.yStepSize
-                //         }
-                //     }]
-                // }
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            min: Number(nodeConfig.yMin),
+                            max: Number(nodeConfig.yMax),
+                            stepSize: Number(nodeConfig.yStepSize)
+
+                        }
+                    }]
+                }
             }
         }
         return result;
