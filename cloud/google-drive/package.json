@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "googleapis": "^85.0.0",
+    "mime-types": "^2.1.32",
     "mustache": "^4.2.0"
   }
 }
