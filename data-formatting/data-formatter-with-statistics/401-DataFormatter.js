@@ -314,25 +314,15 @@ module.exports = function(RED) {
             var type = config.data_type;
             var jsonData = config.data_path;
 
-            // data_entry_point
-            // if (config.data_entry_point === 'path') {
-            //     // local 파일 경로에서 파일 읽기
-
-            // } else 
-            // if (config.data_entry_point === 'binary') {
-            //     // binary file 로 들어온 파일 읽기
-            //     // 추후 구현
-
-            // } else { // 나머지는 string으로 들어와 그대로 사용
-            //     jsonData = msg.payload;
-            // }
-
-            // data parsing
-            // if (type == 'xlsx') jsonData = XlsxParser(config.path);
-            // else if (type == 'csv') jsonData = CsvParser(config.path);
             if (type == 'xlsx') jsonData = XlsxParser(config.data_path);
             else if (type == 'csv') jsonData = CsvParser(config.data_path);
             else if (type == 'xml') {
+                if (config.data_entry_point === 'binary') {
+                    // binary file 로 들어온 파일 읽기
+                    // 추후 구현
+                    msg.payload = Buffer.from(msg.buffer, "base64").toString('utf8');
+                }
+
                 jsonData = XmlParser(msg.payload, config.x_data);
                 parents = [];
             }
