@@ -1,0 +1,86 @@
+[
+    {
+        "id": "362535a511acf194",
+        "type": "tab",
+        "label": "xmlApiTest",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "007079c9c0dd5e16",
+        "type": "http in",
+        "z": "362535a511acf194",
+        "name": "xmltest",
+        "url": "/xml",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 170,
+        "y": 120,
+        "wires": [
+            [
+                "8478e07b3674d3de"
+            ]
+        ]
+    },
+    {
+        "id": "e35b36450a1ddb77",
+        "type": "html-out",
+        "z": "362535a511acf194",
+        "name": "chart",
+        "base": "chart",
+        "datatype": "msg",
+        "datavalue": "data",
+        "brand": "",
+        "video": "",
+        "html": "",
+        "frames": [],
+        "links": {},
+        "x": 850,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "624cd2bf6180f5ab",
+        "type": "data-formatter",
+        "z": "362535a511acf194",
+        "name": "xmlApiTest",
+        "title": "딸기",
+        "data_entry_point": "",
+        "data_src": "xmlApiTest",
+        "data_type": "xml",
+        "chart_type": "line",
+        "result_data_type": "raw",
+        "x_data": "DESC_KOR",
+        "y_data": "NUTR_CONT1",
+        "y_label": "열량",
+        "x": 630,
+        "y": 120,
+        "wires": [
+            [
+                "e35b36450a1ddb77"
+            ]
+        ]
+    },
+    {
+        "id": "8478e07b3674d3de",
+        "type": "http request",
+        "z": "362535a511acf194",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://apis.data.go.kr/1470000/FoodNtrIrdntInfoService/getFoodNtrItdntList?ServiceKey=서비스키&desc_kor=%EB%94%B8%EA%B8%B0",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 390,
+        "y": 120,
+        "wires": [
+            [
+                "624cd2bf6180f5ab"
+            ]
+        ]
+    }
+]
