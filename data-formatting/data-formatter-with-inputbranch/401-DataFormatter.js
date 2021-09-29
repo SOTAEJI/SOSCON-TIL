@@ -1,4 +1,4 @@
-module.exports = function(RED) {
+module.exports = function (RED) {
     const xlsx = require('xlsx');
     const fs = require("fs-extra");
     const os = require("os");
@@ -7,16 +7,8 @@ module.exports = function(RED) {
     const he = require('he');
     var parents = [];
 
-    function JsonFormatting(jsonData, title, type, x_data, y_label, y_data) {
+    function JsonFormatting(X, Y, title, type, y_label) {
         //json formatting
-        var X = []
-        var Y = []
-
-        for (var row of jsonData) {
-            X.push(row[x_data])
-            Y.push(row[y_data])
-        }
-
         var result = {
             type: type,
             data: {
@@ -69,11 +61,9 @@ module.exports = function(RED) {
         return result;
     }
 
-    function XlsxParser(data) {
+    function XlsxParser(xlsxData) {
         //xlsx to json
-        var xlsx_data = xlsx.readFile(data);
-
-        var sheetnames = Object.keys(xlsx_data.Sheets);
+        var sheetnames = Object.keys(xlsxData.Sheets);
         var sheetname = sheetnames[0];
 
         var result = xlsx.utils.sheet_to_json(xlsx_data.Sheets[sheetname]);
@@ -110,8 +100,6 @@ module.exports = function(RED) {
 
         XmlfindAllParents(xml_data, x_data);
 
-        // console.log(parents);
-
         parents.forEach(key => {
             if (isNaN(key) === true) {
                 xml_data = xml_data[key];
@@ -119,9 +107,10 @@ module.exports = function(RED) {
         });
 
         let root = Object.keys(xml_data)[0];
-        if (isNaN(root)) xml_data = xml_data[root];
+        if (isNaN(root)) {
+            xml_data = xml_data[root];
+        }
 
-        // console.log(xml_data);
         return xml_data;
     }
 
@@ -143,45 +132,20 @@ module.exports = function(RED) {
         }
     }
 
-    function calculateStatisticsByItems(jsonData, title, type, x_data, y_label, y_data) {
-        var totalByItems = {};
+    function getRowData(jsonData, title, type, x_data, y_label, y_data) {
+        var X = [];
+        var Y = [];
 
         for (var row of jsonData) {
-            if (totalByItems.hasOwnProperty(row[x_data])) {
-                totalByItems[row[x_data]] += row[y_data];
-            } else {
-                totalByItems[row[x_data]] = row[y_data];
-            }
+            X.push(row[x_data]);
+            Y.push(row[y_data]);
         }
-
-        var X = (Object.keys(totalByItems));
-        var Y = (Object.values(totalByItems));
-
-        var result = {
-            type: type,
-            data: {
-                labels: X,
-                datasets: [{
-                    label: y_label,
-                    data: Y
-                }]
-            },
-            options: {
-                responsive: true,
-                legend: {
-                    position: 'top',
-                },
-                title: {
-                    display: true,
-                    text: title
-                }
-            }
-        }
-        return result;
-
+        console.log(X);
+        console.log(Y);
+        return JsonFormatting(X, Y, title, type, y_label);
     }
 
-    function calculateStatistics(jsonData, title, type, x_data, y_label, y_data) {
+    function getOverallStatistics(jsonData, title, type, x_data, y_label, y_data) {
         // y데이터의 최대, 최소, 평균 세기
         var total = 0;
         var count = 0;
@@ -200,31 +164,11 @@ module.exports = function(RED) {
         var X = ['min', 'max', 'count', 'total', 'average'];
         var Y = [min, max, count, total, average];
 
-        var result = {
-            type: type,
-            data: {
-                labels: X,
-                datasets: [{
-                    label: y_label,
-                    data: Y
-                }]
-            },
-            options: {
-                responsive: true,
-                legend: {
-                    position: 'top',
-                },
-                title: {
-                    display: true,
-                    text: title
-                }
-            }
-        }
-        return result;
-
+        return JsonFormatting(X, Y, title, type, y_label);
     }
 
-    function makeItemsCount(jsonData, title, type, x_data, y_label, y_data) {
+    function getCountByItems(jsonData, title, type, x_data, y_label) {
+        // count the number of x_data items
         var countByItemsJson = {};
 
         for (var row of jsonData) {
@@ -237,73 +181,110 @@ module.exports = function(RED) {
         var X = (Object.keys(countByItemsJson));
         var Y = (Object.values(countByItemsJson));
 
-        console.log(countByItemsJson);
-
-        var result = {
-            type: type,
-            data: {
-                labels: X,
-                datasets: [{
-                    label: y_label,
-                    data: Y
-                }]
-            },
-            options: {
-                responsive: true,
-                legend: {
-                    position: 'top',
-                },
-                title: {
-                    display: true,
-                    text: title
-                }
-            }
-        }
-        return result;
+        return JsonFormatting(X, Y, title, type, y_label);
     }
 
-    function DataFormatting(config) {
-        RED.nodes.createNode(this, config);
+    function getTotalByItems(jsonData, title, type, x_data, y_label, y_data) {
+        var totalByItems = {};
+
+        for (var row of jsonData) {
+            if (totalByItems.hasOwnProperty(row[x_data])) {
+                totalByItems[row[x_data]] += row[y_data];
+            } else {
+                totalByItems[row[x_data]] = row[y_data];
+            }
+        }
+
+        var X = (Object.keys(totalByItems));
+        var Y = (Object.values(totalByItems));
+
+        return JsonFormatting(X, Y, title, type, y_label);
+    }
+
+    function getAverageByItems(jsonData, title, type, x_data, y_label, y_data) {
+        var averageByItems = {};
+        var countByItems = {};
+
+        for (var row of jsonData) {
+            if (averageByItems.hasOwnProperty(row[x_data])) {
+                averageByItems[row[x_data]] += row[y_data];
+                countByItems[row[x_data]] += 1;
+
+            } else {
+                averageByItems[row[x_data]] = row[y_data];
+                countByItems[row[x_data]] = 1;
+            }
+        }
+
+        // 평균 구하기
+        for (key in averageByItems) {
+            averageByItems[key] /= countByItems[key];
+        }
+
+        var X = (Object.keys(averageByItems));
+        var Y = (Object.values(averageByItems));
+
+        return JsonFormatting(X, Y, title, type, y_label);
+    }
+
+    function DataFormatting(n) {
+        RED.nodes.createNode(this, n);
         var node = this;
 
-        node.on('input', function(msg) {
-            var type = config.data_type;
-            var jsonData = config.data_src;
+        node.on('input', function (msg) {
+            var type = n.data_type;
+            var jsonData = n.data_src;
+            var data, xlsxData, xmlData, csvData;
+            //data entry
+            if (n.data_entry_point === 'src') {
+                if (type == 'xlsx') {
+                    xlsxData = xlsx.readFile(n.data_src);
+                } else if (type == 'csv') {
+                    var filename = n.data_src;
+                    var fullFilename = filename;
+                    if (filename && RED.settings.fileWorkingDirectory && !path.isAbsolute(filename)) {
+                        fullFilename = path.resolve(path.join(RED.settings.fileWorkingDirectory, filename));
+                    }
+                    csvData = fs.readFileSync(fullFilename, { encoding: "utf8" });
+                }
+            }
 
-            // // data_entry_point
-            // if (config.data_entry_point === 'src') {
-            //     // local 파일 경로에서 파일 읽기
+            if (n.data_entry_point === 'binary') {
+                if (type == 'xlsx') {
+                    data = Buffer.from(msg.buffer, "base64").toString('base64');
+                    xlsxData = xlsx.read(data);
+                } else if (type == 'xml') {
+                    xmlData = Buffer.from(msg.buffer, "base64").toString('utf8');
+                } else if (type == 'csv') {
+                    csvData = Buffer.from(msg.buffer, "base64").toString('utf8');
+                }
+            }
 
-            // } else if (config.data_entry_point === 'binary') {
-            //     // binary file 로 들어온 파일 읽기
-            //     // 추후 구현
-
-            // } else { // 나머지는 string으로 들어와 그대로 사용
-            //     jsonData = msg.payload;
-            // }
-
-            // console.log(config);
-
-            //data parsing
-            if (type == 'xlsx') jsonData = XlsxParser(config.data_src);
-            else if (type == 'csv') jsonData = CsvParser(config.data_src);
+            if (type == 'xlsx') {
+                jsonData = XlsxParser(xlsxData);
+            }
+            else if (type == 'csv') {
+                jsonData = CsvParser(csvData);
+            }
             else if (type == 'xml') {
-                // jsonData = XmlParser(config.data_src, config.x_data);
-                jsonData = XmlParser(msg.payload, config.x_data);
+                jsonData = XmlParser(xmlData, n.x_data);
                 parents = [];
             }
 
-            console.log('config.result_data_type ', config.result_data_type);
-            if (config.result_data_type === 'statistics') {
-                // msg.data = calculateStatistics(jsonData, config.title, config.chart_type, config.x_data, config.y_label, config.y_data);
-                msg.data = calculateStatisticsByItems(jsonData, config.title, config.chart_type, config.x_data, config.y_label, config.y_data);
+            //data formatting
+            if (config.result_data_type === 'totalByItems') {
+                msg.data = getTotalByItems(jsonData, config.title, config.chart_type, config.x_data, config.y_label, config.y_data);
 
-            } else if (config.result_data_type === 'count') {
-                // count the number of x_data items
-                msg.data = makeItemsCount(jsonData, config.title, config.chart_type, config.x_data, config.y_label, config.y_data);
+            } else if (config.result_data_type === 'countByItems') {
+                msg.data = getCountByItems(jsonData, config.title, config.chart_type, config.x_data, config.y_label, config.y_data);
+
+            } else if (config.result_data_type === 'averageByItems') {
+                msg.data = getAverageByItems(jsonData, config.title, config.chart_type, config.x_data, config.y_label, config.y_data);
+
+            } else if (config.result_data_type === 'overallStatistics') {
+                msg.data = getOverallStatistics(jsonData, config.title, config.chart_type, config.x_data, config.y_label, config.y_data);
 
             } else {
-                //change json to chart.js format
                 msg.data = JsonFormatting(jsonData, config.title, config.chart_type, config.x_data, config.y_label, config.y_data);
             }
 

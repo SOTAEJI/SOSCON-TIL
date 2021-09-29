@@ -7,15 +7,15 @@
         <input type="text" id="node-input-name" placeholder="Name"><br>
     </div>
     <div class="form-row">
-        <label for="node-input-data_src"><i class="fa fa-tag"></i> Data</label>
-        <input type="text" id="node-input-data_src" placeholder="Data"><br>
+        <label for="node-input-data_path"><i class="fa fa-tag"></i> Data Path</label>
+        <input type="text" id="node-input-data_path" placeholder="Data Path"><br>
     </div>
     <div class="form-row">
         <label for="node-input-data_entry_point"><i class="fa fa-tag"></i> Data Entry Point</label>
         <select id="node-input-data_entry_point">
-            <option value="string">string</option>
-            <option value="binary">file binary string</option>
-            <option value="src">data src</option>
+            <option value="string">String</option>
+            <option value="binary">Binary File</option>
+            <option value="path">Data Path</option>
         </select>
     </div>
     <div class="form-row">
@@ -38,8 +38,10 @@
         <label for="node-input-result_data_type"><i class="fa fa-tag"></i> Result Data Type</label>
         <select id="node-input-result_data_type">
             <option value="raw">Raw Data</option>
-            <option value="statistics">Statistics</option>
-            <option value="count">Count By Items</option>
+            <option value="totalByItems">Total By Items</option>
+            <option value="countByItems">Count By Items</option>
+            <option value="averageByItems">Average By Items</option>
+            <option value="overallStatistics">Overall Statistics</option>
         </select>
     </div>
     <div class="form-row">
@@ -78,7 +80,7 @@
             data_entry_point: {
                 value: ""
             },
-            data_src: {
+            data_path: {
                 value: ""
             },
             data_type: {
@@ -103,7 +105,7 @@
         inputs: 1,
         outputs: 1,
         icon: "file.png",
-        label: function() {
+        label: function () {
             return this.name || "data-formatter";
         }
     });
