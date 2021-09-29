@@ -312,7 +312,7 @@ module.exports = function(RED) {
 
         node.on('input', function(msg) {
             var type = config.data_type;
-            var jsonData = config.path;
+            var jsonData = config.data_path;
 
             // data_entry_point
             // if (config.data_entry_point === 'path') {
@@ -328,8 +328,10 @@ module.exports = function(RED) {
             // }
 
             // data parsing
-            if (type == 'xlsx') jsonData = XlsxParser(config.path);
-            else if (type == 'csv') jsonData = CsvParser(config.path);
+            // if (type == 'xlsx') jsonData = XlsxParser(config.path);
+            // else if (type == 'csv') jsonData = CsvParser(config.path);
+            if (type == 'xlsx') jsonData = XlsxParser(config.data_path);
+            else if (type == 'csv') jsonData = CsvParser(config.data_path);
             else if (type == 'xml') {
                 jsonData = XmlParser(msg.payload, config.x_data);
                 parents = [];
