@@ -312,13 +312,14 @@ module.exports = function(RED) {
 
         node.on('input', function(msg) {
             var type = config.data_type;
-            var jsonData = config.data_src;
+            var jsonData = config.path;
 
             // data_entry_point
             // if (config.data_entry_point === 'path') {
             //     // local 파일 경로에서 파일 읽기
 
-            // } else if (config.data_entry_point === 'binary') {
+            // } else 
+            // if (config.data_entry_point === 'binary') {
             //     // binary file 로 들어온 파일 읽기
             //     // 추후 구현
 
@@ -326,11 +327,9 @@ module.exports = function(RED) {
             //     jsonData = msg.payload;
             // }
 
-            console.log(config);
-
             // data parsing
-            if (type == 'xlsx') jsonData = XlsxParser(config.data_src);
-            else if (type == 'csv') jsonData = CsvParser(config.data_src);
+            if (type == 'xlsx') jsonData = XlsxParser(config.path);
+            else if (type == 'csv') jsonData = CsvParser(config.path);
             else if (type == 'xml') {
                 jsonData = XmlParser(msg.payload, config.x_data);
                 parents = [];
