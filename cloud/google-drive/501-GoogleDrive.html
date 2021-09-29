@@ -1,21 +1,23 @@
+<script
+  type="module"
+  src="https://unpkg.com/googleapis@87.0.0/build/src/index.js"
+></script>
 <script type="text/javascript">
-  RED.nodes.registerType("Google Drive", {
+  RED.nodes.registerType("GoogleDrive", {
     category: "drive",
     color: "#e6e6e6",
     defaults: {
       name: { value: "" },
-      clientId: { value: "" },
-      clientSecret: { value: "" },
-      refreshToken: { value: "" },
+      clientId: { value: "", required: true },
+      clientSecret: { value: "", required: true },
+      refreshToken: { value: "", required: true },
       doType: { value: "download" },
-      fileName: { value: "" },
-      fileId: { value: "" },
-      filePath: { value: "" },
-      dataType: { value: "" },
+      fileName: { value: "", required: true },
+      filePath: { value: "", required: true },
     },
     inputs: 1,
     outputs: 1,
-    icon: "drive.png",
+    icon: "googleDrive.png",
     label: function () {
       return this.name || "Google Drive";
     },
@@ -23,21 +25,18 @@
       $("#node-input-doType").on("change", function () {
         const val = $(this).val();
         switch (val) {
-          case "download":
-            $("#node-input-fileId-row").show();
-            break;
-          case "upload":
-            $("#node-input-fileId-row").hide();
+          case "read":
+            $("#node-input-filePath-row").hide();
             break;
           default:
-            $("#node-input-fileId-row").show();
+            $("#node-input-filePath-row").show();
         }
       });
     },
   });
 </script>
 
-<script type="text/html" data-template-name="Google Drive">
+<script type="text/html" data-template-name="GoogleDrive">
   <div class="form-row">
     <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
     <input type="text" id="node-input-name" placeholder="Name" />
@@ -73,13 +72,8 @@
     <select name="doType" id="node-input-doType">
       <option value="download">Download to Local</option>
       <option value="upload">Upload to Google Drive</option>
+      <option value="read">Read a File</option>
     </select>
-  </div>
-  <div class="form-row" id="node-input-fileId-row">
-    <label for="node-input-fileId"
-      ><i class="fa fa-file-text-o"></i> File ID</label
-    >
-    <input type="text" id="node-input-fileId" placeholder="File ID" />
   </div>
   <div class="form-row" id="node-input-fileName-row">
     <label for="node-input-fileName"
@@ -93,24 +87,6 @@
     >
     <input type="text" id="node-input-filePath" placeholder="C:\" />
   </div>
-  <div class="form-row">
-    <label for="node-input-dataType"
-      ><i class="fa fa-cube"></i> Data Type</label
-    >
-    <select name="doType" id="node-input-dataType">
-      <option value="">Select Data Type</option>
-      <option value="pdf">PDF</option>
-      <option value="text">Text</option>
-      <option value="msWord">MS Word</option>
-      <option value="msExcel">MS Excel</option>
-      <option value="msPpt">MS PowerPoint</option>
-      <option value="csv">CSV</option>
-      <option value="json">JSON</option>
-      <option value="jpeg">JPEG</option>
-      <option value="png">PNG</option>
-      <option value="svg">SVG</option>
-    </select>
-  </div>
 </script>
 
 <style type="text/css">
@@ -120,7 +96,7 @@
   }
 </style>
 
-<script type="text/html" data-help-name="Google Drive">
+<script type="text/html" data-help-name="GoogleDrive">
   <p>This node access Google Drive for Download or Upload API</p>
   <h3>Inputs</h3>
   <dl class="message-properties">
@@ -146,8 +122,6 @@
     </dd>
     <dt>What to do</dt>
     <dd>You can choose download or upload mode.</dd>
-    <dt>File ID</dt>
-    <dd>Enter the ID of the file on the drive.</dd>
     <dt>File Name</dt>
     <dd>
       Enter the name of the file to be saved in Local Or the name of the file to
@@ -158,7 +132,5 @@
       Enter the path without the file name when downloading. And enter the Full
       Path(with file name) when uploading.
     </dd>
-    <dt>Data Type</dt>
-    <dd>You must select the data type of the file.</dd>
   </dl>
 </script>
