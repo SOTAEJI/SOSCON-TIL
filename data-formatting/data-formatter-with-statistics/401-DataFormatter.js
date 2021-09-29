@@ -314,8 +314,8 @@ module.exports = function(RED) {
             var type = config.data_type;
             var jsonData = config.data_src;
 
-            // // data_entry_point
-            // if (config.data_entry_point === 'src') {
+            // data_entry_point
+            // if (config.data_entry_point === 'path') {
             //     // local 파일 경로에서 파일 읽기
 
             // } else if (config.data_entry_point === 'binary') {
@@ -326,13 +326,12 @@ module.exports = function(RED) {
             //     jsonData = msg.payload;
             // }
 
-            // console.log(config);
+            console.log(config);
 
-            //data parsing
+            // data parsing
             if (type == 'xlsx') jsonData = XlsxParser(config.data_src);
             else if (type == 'csv') jsonData = CsvParser(config.data_src);
             else if (type == 'xml') {
-                // jsonData = XmlParser(config.data_src, config.x_data);
                 jsonData = XmlParser(msg.payload, config.x_data);
                 parents = [];
             }
