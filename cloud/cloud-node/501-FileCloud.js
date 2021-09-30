@@ -13,10 +13,14 @@ module.exports = function exportFunc(RED) {
       const filePath = msg.payload.filePath || config.filePath;
 
       if (cloudType === "google") {
+        const clientId = msg.payload.clientId || config.clientId;
+        const clientSecret = msg.payload.clientSecret || config.clientSecret;
+        const refreshToken = msg.payload.refreshToken || config.refreshToken;
         const redirectUri = "https://developers.google.com/oauthplayground";
-        const clientId = config.clientId;
-        const clientSecret = config.clientSecret;
-        const refreshToken = config.refreshToken;
+        if (!clientId || !clientSecret || !refreshToken) {
+          throw new Error("Missing token to access Google Drive");
+        }
+
         const auth = new google.auth.OAuth2(
           clientId,
           clientSecret,
@@ -27,84 +31,39 @@ module.exports = function exportFunc(RED) {
           version: "v3",
           auth,
         });
-        async function googleAPI(doType) {
-          if (!clientId || !clientSecret || !refreshToken) {
-            throw new Error("Missing token to access Google Drive");
-          }
 
-          if (!fileName) {
-            msg = "Missing file name";
-            send(msg);
-            throw new Error("Missing file name");
-          }
-          if (doType !== "read" && !filePath) {
-            throw new Error("Missing file path");
-          }
-          if (doType === "download" || doType === "read") {
-            const params = {
-              q: `name='${fileName}'`,
-              fields: "files(id, name)",
-              spaces: "drive",
-            };
-            let fileId = null;
-            const response = await drive.files.list(params).then((res) => {
-              fileId =
-                res.data.files.length > 0 ? res.data.files[0]["id"] : null;
-            });
-            if (doType === "read") {
-              return await drive.files.get(
-                {
-                  fileId,
-                  alt: "media",
-                },
-                {
-                  responseType: "arraybuffer",
-                }
+        switch (doType) {
+          case "download":
+            DonwloadToGoogleDrive(fileName, drive).then((res) => {
+              var buffer = [];
+              const writeStream = res.data.pipe(
+                fs.createWriteStream(`${filePath}\\${fileName}`)
               );
-            } else {
-              return await drive.files.get(
-                {
-                  fileId,
-                  alt: "media",
-                },
-                {
-                  responseType: "stream",
-                }
-              );
-            }
-          } else if (doType === "upload") {
-            return await drive.files.create({
-              requestBody: {
-                name: fileName,
-                mimeType: mime.lookup(fileName),
-              },
-              media: {
-                mimeType: mime.lookup(fileName),
-                body: fs.createReadStream(`${filePath}\\${fileName}`),
-              },
+              res.data.on("data", (data) => {
+                msg.filePath = `${filePath}\\${fileName}` || null;
+                msg.data = Array.from(new Uint8Array(data));
+                this.send(msg);
+              });
             });
-          }
+            break;
+          case "read":
+            ReadToGoogleDrive(fileName, drive).then((res) => {
+              msg.data = Array.from(new Uint8Array(res.data));
+              this.send(msg);
+            });
+            break;
+          case "upload":
+            UploadToGoogleDrive(fileName, filePath, drive).then((res) => {
+              msg.data = Array.from(
+                fs.readFileSync(`${filePath}\\${fileName}`)
+              );
+              msg.filePath = `${filePath}\\${fileName}` || null;
+              this.send(msg);
+            });
+            break;
         }
-
-        googleAPI(doType)
-          .then((res) => {
-            if (doType === "download") {
-              res.data.pipe(fs.createWriteStream(`${filePath}\\${fileName}`));
-            }
-
-            if (doType === "read") {
-              msg.buffer = Array.from(new Uint8Array(res.data));
-            } else {
-              msg.buffer = fs.readFileSync(`${filePath}\\${fileName}`);
-            }
-            msg.filePath = `${filePath}\\${fileName}` || null;
-            send(msg);
-          })
-          .catch((err) => {
-            console.log("error: ", err);
-          });
       } else if (cloudType === "one") {
-        const apiUrl = 'https://graph.microsoft.com/v1.0/me/drive/';
+        const apiUrl = "https://graph.microsoft.com/v1.0/me/drive/";
         const accessToken = config.accessToken;
         const params = {
           apiUrl,
@@ -206,7 +165,11 @@ module.exports = function exportFunc(RED) {
 
     var options = {
       method: "PUT",
-      url: params.apiUrl + "items/root:/" + encodeURIComponent(params.fileName) + ":/content",
+      url:
+        params.apiUrl +
+        "items/root:/" +
+        encodeURIComponent(params.fileName) +
+        ":/content",
       headers: {
         "Content-Type": mime.lookup(path),
         Authorization: "Bearer " + params.accessToken,
@@ -247,5 +210,70 @@ module.exports = function exportFunc(RED) {
     return Buffer.from(response.data);
   }
 
+  // function for google drive
+  async function ReadToGoogleDrive(fileName, drive) {
+    if (!fileName) {
+      msg = "Missing file name";
+      throw new Error("Missing file name");
+    }
+
+    const params = {
+      q: `name='${fileName}'`,
+      fields: "files(id, name)",
+      spaces: "drive",
+    };
+    let fileId = null;
+    const response = await drive.files.list(params).then((res) => {
+      fileId = res.data.files.length > 0 ? res.data.files[0]["id"] : null;
+    });
+    return await drive.files.get(
+      {
+        fileId,
+        alt: "media",
+      },
+      {
+        responseType: "arraybuffer",
+      }
+    );
+  }
+
+  async function DonwloadToGoogleDrive(fileName, drive) {
+    if (!fileName) {
+      msg = "Missing file name";
+      throw new Error("Missing file name");
+    }
+
+    const params = {
+      q: `name='${fileName}'`,
+      fields: "files(id, name)",
+      spaces: "drive",
+    };
+    let fileId = null;
+    const response = await drive.files.list(params).then((res) => {
+      fileId = res.data.files.length > 0 ? res.data.files[0]["id"] : null;
+    });
+    return await drive.files.get(
+      {
+        fileId,
+        alt: "media",
+      },
+      {
+        responseType: "stream",
+      }
+    );
+  }
+
+  async function UploadToGoogleDrive(fileName, filePath, drive) {
+    return await drive.files.create({
+      requestBody: {
+        name: fileName,
+        mimeType: mime.lookup(fileName),
+      },
+      media: {
+        mimeType: mime.lookup(fileName),
+        body: fs.createReadStream(`${filePath}\\${fileName}`),
+      },
+    });
+  }
   RED.nodes.registerType("FileCloud", FileCloudNode);
 };
