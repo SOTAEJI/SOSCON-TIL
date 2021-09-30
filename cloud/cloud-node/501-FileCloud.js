@@ -1,4 +1,5 @@
 const fs = require("fs");
+const axios = require("axios");
 const { google } = require("googleapis");
 const mime = require("mime-types");
 
@@ -103,9 +104,148 @@ module.exports = function exportFunc(RED) {
             console.log("error: ", err);
           });
       } else if (cloudType === "one") {
-        // one drive 로직
+        const apiUrl = 'https://graph.microsoft.com/v1.0/me/drive/';
+        const accessToken = config.accessToken;
+        const params = {
+          apiUrl,
+          accessToken,
+          fileName,
+          filePath,
+        };
+        try {
+          switch (doType) {
+            case "download":
+              download(params).then((val) => {
+                msg.filePath = `${params.filePath}/${params.fileName}`;
+                msg.data = val;
+                send(msg);
+              });
+              break;
+            case "upload":
+              upload(params).then((val) => {
+                msg.filePath = `${params.filePath}/${params.fileName}`;
+                msg.data = val;
+                send(msg);
+              });
+              break;
+            case "read":
+              read(params).then((val) => {
+                msg.data = val;
+                send(msg);
+              });
+          }
+        } catch (error) {
+          msg.payload = error;
+          send(msg);
+        }
       }
     });
   }
+
+  async function download(params) {
+    if (!params.accessToken) {
+      throw new Error("Missing params.accessToken");
+    }
+    if (!params.fileName) {
+      throw new Error("Missing params.fileName");
+    }
+    if (!params.filePath) {
+      throw new Error("Missing params.filePath");
+    }
+
+    var options = {
+      method: "GET",
+      url: params.apiUrl + "root:/" + encodeURIComponent(params.fileName),
+      headers: {
+        Authorization: "Bearer " + params.accessToken,
+      },
+    };
+    var response = await axios(options);
+    const fileId = response.data.id;
+
+    const path = `${params.filePath}/${params.fileName}`;
+    var options = {
+      method: "GET",
+      url: params.apiUrl + "items/" + fileId + "/content",
+      headers: {
+        Authorization: "Bearer " + params.accessToken,
+      },
+      responseType: "stream",
+    };
+    var response = await axios(options);
+    const item = response.data;
+    const writeStream = fs.createWriteStream(path);
+
+    var end = new Promise((resolve, reject) => {
+      var buffer = [];
+      item.on("data", (data) => {
+        writeStream.write(data);
+        buffer.push(data);
+      });
+      item.on("end", () => {
+        writeStream.end();
+        resolve(Buffer.concat(buffer));
+      });
+    });
+    return await end;
+  }
+
+  async function upload(params) {
+    if (!params.accessToken) {
+      throw new Error("Missing params.accessToken");
+    }
+    if (!params.fileName) {
+      throw new Error("Missing params.fileName");
+    }
+    if (!params.filePath) {
+      throw new Error("Missing params.filePath");
+    }
+
+    const path = `${params.filePath}/${params.fileName}`;
+    const data = await fs.promises.readFile(path);
+
+    var options = {
+      method: "PUT",
+      url: params.apiUrl + "items/root:/" + encodeURIComponent(params.fileName) + ":/content",
+      headers: {
+        "Content-Type": mime.lookup(path),
+        Authorization: "Bearer " + params.accessToken,
+      },
+      data: data,
+      encoding: null,
+    };
+    axios(options);
+    return Buffer.from(data);
+  }
+
+  async function read(params) {
+    if (!params.accessToken) {
+      throw new Error("Missing params.accessToken");
+    }
+    if (!params.fileName) {
+      throw new Error("Missing params.fileName");
+    }
+
+    var options = {
+      method: "GET",
+      url: params.apiUrl + "root:/" + encodeURIComponent(params.fileName),
+      headers: {
+        Authorization: "Bearer " + params.accessToken,
+      },
+    };
+    var response = await axios(options);
+    const fileId = response.data.id;
+
+    var options = {
+      method: "GET",
+      url: params.apiUrl + "items/" + fileId + "/content",
+      headers: {
+        Authorization: "Bearer " + params.accessToken,
+      },
+    };
+    var response = await axios(options);
+    return Buffer.from(response.data);
+  }
+
   RED.nodes.registerType("FileCloud", FileCloudNode);
 };

@@ -20,6 +20,7 @@
         required: true,
       },
       accessToken: {
+        value: "",
         type: "text",
         required: true,
       },
@@ -32,10 +33,12 @@
       fileName: {
         value: "",
         type: "text",
+        required: true,
       },
       filePath: {
         value: "",
         type: "text",
+        required: true,
       },
     },
     inputs: 1,
@@ -131,7 +134,7 @@
     >
     <select name="doType" id="node-input-doType">
       <option value="download">Download to Local</option>
-      <option value="upload">Upload to Google Drive</option>
+      <option value="upload">Upload to Cloud</option>
       <option value="read">Read a File</option>
     </select>
   </div>
