@@ -18,6 +18,7 @@ module.exports = function exportFunc(RED) {
         const clientSecret = msg.payload.clientSecret || config.clientSecret;
         const refreshToken = msg.payload.refreshToken || config.refreshToken;
         const redirectUri = "https://developers.google.com/oauthplayground";
+
         if (!clientId || !clientSecret || !refreshToken) {
           throw new Error("Missing token to access Google Drive");
         }
@@ -35,44 +36,21 @@ module.exports = function exportFunc(RED) {
 
         switch (doType) {
           case "download":
-            DonwloadToGoogleDrive(fileName, drive)
-              .then((res) => {
-                const writeStream = fs.createWriteStream(
-                  `${filePath}/${fileName}`
-                );
-                var buffer = [];
-                res.data.on("data", (data) => {
-                  writeStream.write(data);
-                  buffer.push(data);
-                });
-                res.data.on("end", () => {
-                  msg.data = Buffer.concat(buffer);
-                  msg.filePath = `${filePath}/${fileName}`;
-                  writeStream.end();
-                  send(msg);
-                });
+            DonwloadToGoogleDrive(fileName, filePath, drive)
+              .then((val) => {
+                msg.filePath = `${filePath}/${fileName}`;
+                msg.data = val;
               })
               .catch((error) => {
                 node.status({ fill: "red", shape: "dot", text: "error" });
                 node.error("failed: download" + error.toString(), msg);
               });
             break;
-          case "read":
-            ReadToGoogleDrive(fileName, drive)
-              .then((res) => {
-                msg.data = Buffer.from(new Uint8Array(res.data));
-                send(msg);
-              })
-              .catch((error) => {
-                node.status({ fill: "red", shape: "dot", text: "error" });
-                node.error("failed: read" + error.toString(), msg);
-              });
-            break;
           case "upload":
             UploadToGoogleDrive(fileName, filePath, drive)
               .then((val) => {
-                msg.data = val;
                 msg.filePath = `${filePath}/${fileName}`;
+                msg.data = val;
                 send(msg);
               })
               .catch((error) => {
@@ -80,6 +58,16 @@ module.exports = function exportFunc(RED) {
                 node.error("failed: upload" + error.toString(), msg);
               });
             break;
+            case "read":
+            ReadToGoogleDrive(fileName, drive)
+              .then((val) => {
+                msg.data = val;
+                send(msg);
+              })
+              .catch((error) => {
+                node.status({ fill: "red", shape: "dot", text: "error" });
+                node.error("failed: read" + error.toString(), msg);
+              });
         }
       } else if (cloudType === "one") {
         const apiUrl = "https://graph.microsoft.com/v1.0/me/drive/";
@@ -94,7 +82,7 @@ module.exports = function exportFunc(RED) {
           case "download":
             download(params)
               .then((val) => {
-                msg.filePath = `${params.filePath}/${params.fileName}`;
+                msg.filePath = `${filePath}/${fileName}`;
                 msg.data = val;
                 send(msg);
               })
@@ -106,7 +94,7 @@ module.exports = function exportFunc(RED) {
           case "upload":
             upload(params)
               .then((val) => {
-                msg.filePath = `${params.filePath}/${params.fileName}`;
+                msg.filePath = `${filePath}/${fileName}`;
                 msg.data = val;
                 send(msg);
               })
@@ -132,13 +120,13 @@ module.exports = function exportFunc(RED) {
 
   async function download(params) {
     if (!params.accessToken) {
-      throw new Error("Missing params.accessToken");
+      throw new Error("Missing accessToken");
     }
     if (!params.fileName) {
-      throw new Error("Missing params.fileName");
+      throw new Error("Missing fileName");
     }
     if (!params.filePath) {
-      throw new Error("Missing params.filePath");
+      throw new Error("Missing filePath");
     }
 
     var options = {
@@ -180,13 +168,13 @@ module.exports = function exportFunc(RED) {
 
   async function upload(params) {
     if (!params.accessToken) {
-      throw new Error("Missing params.accessToken");
+      throw new Error("Missing accessToken");
     }
     if (!params.fileName) {
-      throw new Error("Missing params.fileName");
+      throw new Error("Missing fileName");
     }
     if (!params.filePath) {
-      throw new Error("Missing params.filePath");
+      throw new Error("Missing filePath");
     }
 
     const path = `${params.filePath}/${params.fileName}`;
@@ -194,11 +182,7 @@ module.exports = function exportFunc(RED) {
 
     var options = {
       method: "PUT",
-      url:
-        params.apiUrl +
-        "items/root:/" +
-        encodeURIComponent(params.fileName) +
-        ":/content",
+      url: params.apiUrl + "items/root:/" + encodeURIComponent(params.fileName) + ":/content",
       headers: {
         "Content-Type": mime.lookup(path),
         Authorization: "Bearer " + params.accessToken,
@@ -212,10 +196,10 @@ module.exports = function exportFunc(RED) {
 
   async function read(params) {
     if (!params.accessToken) {
-      throw new Error("Missing params.accessToken");
+      throw new Error("Missing accessToken");
     }
     if (!params.fileName) {
-      throw new Error("Missing params.fileName");
+      throw new Error("Missing fileName");
     }
 
     var options = {
@@ -240,7 +224,7 @@ module.exports = function exportFunc(RED) {
   }
 
   // function for google drive
-  async function ReadToGoogleDrive(fileName, drive) {
+  async function DonwloadToGoogleDrive(fileName, filePath, drive) {
     if (!fileName) {
       msg = "Missing file name";
       throw new Error("Missing file name");
@@ -251,37 +235,15 @@ module.exports = function exportFunc(RED) {
       fields: "files(id, name)",
       spaces: "drive",
     };
-    let fileId = null;
-    await drive.files.list(params).then((res) => {
-      fileId = res.data.files.length > 0 ? res.data.files[0]["id"] : null;
-    });
-    return await drive.files.get(
-      {
-        fileId,
-        alt: "media",
-      },
-      {
-        responseType: "arraybuffer",
-      }
-    );
-  }
 
-  async function DonwloadToGoogleDrive(fileName, drive) {
-    if (!fileName) {
-      msg = "Missing file name";
-      throw new Error("Missing file name");
-    }
+    // let fileId = null;
+    // await drive.files.list(params).then((res) => {
+    //   fileId = res.data.files.length > 0 ? res.data.files[0]["id"] : null;
+    // });
+    var response = await drive.files.list(params);
+    const fileId = response.data.files[0].id;
 
-    const params = {
-      q: `name='${fileName}'`,
-      fields: "files(id, name)",
-      spaces: "drive",
-    };
-    let fileId = null;
-    await drive.files.list(params).then((res) => {
-      fileId = res.data.files.length > 0 ? res.data.files[0]["id"] : null;
-    });
-    return await drive.files.get(
+    var response = await drive.files.get(
       {
         fileId,
         alt: "media",
@@ -290,6 +252,21 @@ module.exports = function exportFunc(RED) {
         responseType: "stream",
       }
     );
+    const item = response.data;
+    const writeStream = fs.createWriteStream(`${filePath}/${fileName}`);
+
+    var end = new Promise((resolve, reject) => {
+      var buffer = [];
+      item.on("data", (data) => {
+        writeStream.write(data);
+        buffer.push(data);
+      });
+      item.on("end", () => {
+        writeStream.end();
+        resolve(Buffer.concat(buffer));
+      });
+    });
+    return await end;
   }
 
   async function UploadToGoogleDrive(fileName, filePath, drive) {
@@ -306,5 +283,32 @@ module.exports = function exportFunc(RED) {
     });
     return Buffer.from(data);
   }
+
+  async function ReadToGoogleDrive(fileName, drive) {
+    if (!fileName) {
+      msg = "Missing file name";
+      throw new Error("Missing file name");
+    }
+
+    const params = {
+      q: `name='${fileName}'`,
+      fields: "files(id, name)",
+      spaces: "drive",
+    };
+    var response = await drive.files.list(params);
+    const fileId = response.data.files[0].id;
+    
+    var response = await drive.files.get(
+      {
+        fileId,
+        alt: "media",
+      },
+      {
+        responseType: "arraybuffer",
+      }
+    );
+    return Buffer.from(new Uint8Array(response.data));
+  }
+
   RED.nodes.registerType("FileCloud", FileCloudNode);
 };
