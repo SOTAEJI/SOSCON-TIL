@@ -35,33 +35,50 @@ module.exports = function exportFunc(RED) {
 
         switch (doType) {
           case "download":
-            DonwloadToGoogleDrive(fileName, drive).then((res) => {
-              const writeStream = fs.createWriteStream(`${filePath}/${fileName}`);
-              var buffer = [];
-              res.data.on("data", (data) => {
-                writeStream.write(data);
-                buffer.push(data);
+            DonwloadToGoogleDrive(fileName, drive)
+              .then((res) => {
+                const writeStream = fs.createWriteStream(
+                  `${filePath}/${fileName}`
+                );
+                var buffer = [];
+                res.data.on("data", (data) => {
+                  writeStream.write(data);
+                  buffer.push(data);
+                });
+                res.data.on("end", () => {
+                  msg.data = Buffer.concat(buffer);
+                  msg.filePath = `${filePath}/${fileName}`;
+                  writeStream.end();
+                  send(msg);
+                });
+              })
+              .catch((error) => {
+                node.status({ fill: "red", shape: "dot", text: "error" });
+                node.error("failed: download" + error.toString(), msg);
               });
-              res.data.on("end", () => {
-                msg.data = Buffer.concat(buffer);
-                msg.filePath = `${filePath}/${fileName}`;
-                writeStream.end();
-                send(msg);
-              });
-            });
             break;
           case "read":
-            ReadToGoogleDrive(fileName, drive).then((res) => {
-              msg.data = Buffer.from(new Uint8Array(res.data));
-              send(msg);
-            });
+            ReadToGoogleDrive(fileName, drive)
+              .then((res) => {
+                msg.data = Buffer.from(new Uint8Array(res.data));
+                send(msg);
+              })
+              .catch((error) => {
+                node.status({ fill: "red", shape: "dot", text: "error" });
+                node.error("failed: read" + error.toString(), msg);
+              });
             break;
           case "upload":
-            UploadToGoogleDrive(fileName, filePath, drive).then((res) => {
-              msg.data = Buffer.from(fs.readFileSync(`${filePath}/${fileName}`));
-              msg.filePath = `${filePath}/${fileName}`;
-              send(msg);
-            });
+            UploadToGoogleDrive(fileName, filePath, drive)
+              .then((val) => {
+                msg.data = val;
+                msg.filePath = `${filePath}/${fileName}`;
+                send(msg);
+              })
+              .catch((error) => {
+                node.status({ fill: "red", shape: "dot", text: "error" });
+                node.error("failed: upload" + error.toString(), msg);
+              });
             break;
         }
       } else if (cloudType === "one") {
@@ -75,33 +92,39 @@ module.exports = function exportFunc(RED) {
         };
         switch (doType) {
           case "download":
-            download(params).then((val) => {
-              msg.filePath = `${params.filePath}/${params.fileName}`;
-              msg.data = val;
-              send(msg);
-            }).catch(error => {
-              node.status({ fill: "red", shape: "dot", text: "error" });
-              node.error("failed: download" + error.toString(), msg);
-            });
+            download(params)
+              .then((val) => {
+                msg.filePath = `${params.filePath}/${params.fileName}`;
+                msg.data = val;
+                send(msg);
+              })
+              .catch((error) => {
+                node.status({ fill: "red", shape: "dot", text: "error" });
+                node.error("failed: download" + error.toString(), msg);
+              });
             break;
           case "upload":
-            upload(params).then((val) => {
-              msg.filePath = `${params.filePath}/${params.fileName}`;
-              msg.data = val;
-              send(msg);
-            }).catch(error => {
-              node.status({ fill: "red", shape: "dot", text: "error" });
-              node.error("failed: upload" + error.toString(), msg);
-            });
+            upload(params)
+              .then((val) => {
+                msg.filePath = `${params.filePath}/${params.fileName}`;
+                msg.data = val;
+                send(msg);
+              })
+              .catch((error) => {
+                node.status({ fill: "red", shape: "dot", text: "error" });
+                node.error("failed: upload" + error.toString(), msg);
+              });
             break;
           case "read":
-            read(params).then((val) => {
-              msg.data = val;
-              send(msg);
-            }).catch(error => {
-              node.status({ fill: "red", shape: "dot", text: "error" });
-              node.error("failed: read" + error.toString(), msg);
-            });
+            read(params)
+              .then((val) => {
+                msg.data = val;
+                send(msg);
+              })
+              .catch((error) => {
+                node.status({ fill: "red", shape: "dot", text: "error" });
+                node.error("failed: read" + error.toString(), msg);
+              });
         }
       }
     });
@@ -270,16 +293,18 @@ module.exports = function exportFunc(RED) {
   }
 
   async function UploadToGoogleDrive(fileName, filePath, drive) {
-    return await drive.files.create({
+    const data = await fs.readFileSync(`${filePath}/${fileName}`);
+    await drive.files.create({
       requestBody: {
         name: fileName,
         mimeType: mime.lookup(fileName),
       },
       media: {
         mimeType: mime.lookup(fileName),
-        body: fs.createReadStream(`${filePath}/${fileName}`),
+        data: data,
       },
     });
+    return Buffer.from(data);
   }
   RED.nodes.registerType("FileCloud", FileCloudNode);
 };
