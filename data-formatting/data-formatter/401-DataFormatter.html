@@ -143,21 +143,21 @@
         },
     });
 
-    RED.nodes.registerType('chart-config',{
+    RED.nodes.registerType('chart-config', {
         category: 'function',
         color: '#edbb64',
         defaults: {
-            name: {value: "Chart Config"},
-            borderColor: {value:""},
-            borderWidth: {value:""},
-            backgroundColor: {value:""},
-            yMin: {value:0},
-            yMax: {value:null},
-            yStepSize: {value:null},
+            name: { value: "Chart Config" },
+            borderColor: { value: "" },
+            borderWidth: { value: "" },
+            backgroundColor: { value: "" },
+            yMin: { value: 0 },
+            yMax: { value: null },
+            yStepSize: { value: null },
         },
         icon: "file.png",
         paletteLabel: "Chart Config",
-        label: function() {
+        label: function () {
             return this.name;
         }
     });

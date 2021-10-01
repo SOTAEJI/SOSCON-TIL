@@ -12,8 +12,8 @@ module.exports = function (RED) {
         var X = []
         var Y = []
         console.log(nodeConfig)
-        console.log(typeof(Number(nodeConfig.yMin)))
-        
+        console.log(typeof (Number(nodeConfig.yMin)))
+
         for (var row of jsonData) {
             X.push(row[x_data])
             Y.push(row[y_data])
@@ -157,14 +157,14 @@ module.exports = function (RED) {
     }
 
     function ChartConfig(n) {
-        RED.nodes.createNode(this,n);
-		this.borderColor = n.borderColor;
-		this.borderWidth = n.borderWidth;
+        RED.nodes.createNode(this, n);
+        this.borderColor = n.borderColor;
+        this.borderWidth = n.borderWidth;
         this.backgroundColor = n.backgroundColor;
         this.yMax = n.yMax;
         this.yMin = n.yMin;
         this.yStepSize = n.yStepSize;
-        
+
     }
 
     function DataFormatting(n) {
@@ -176,16 +176,16 @@ module.exports = function (RED) {
             var jsonData = n.data_src;
             node.configId = n.config;
             RED.nodes.eachNode(function (nn) {
-                if(node.configId==nn.id) {
+                if (node.configId == nn.id) {
                     node.config = nn;
                 }
             });
 
             //data parsing
-            if (type == 'xlsx') jsonData = XlsxParser(n.data_src);
+            //if (type == 'xlsx') jsonData = XlsxParser(n.data_src);
             else if (type == 'csv') jsonData = CsvParser(n.data_src);
             else if (type == 'xml') jsonData = XmlParser(n.data_src, n.x_data);
-            
+
             //change json to chart.js format
             msg.data = JsonFormatting(jsonData, n.title, n.chart_type, n.x_data, n.y_label, n.y_data, node.config);
             node.send(msg);

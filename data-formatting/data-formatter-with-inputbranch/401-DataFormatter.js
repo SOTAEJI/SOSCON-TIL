@@ -245,6 +245,7 @@ module.exports = function (RED) {
                 jsonData = XlsxParser(data);
             }
             else if (type == 'csv') {
+                console.log(data);
                 jsonData = CsvParser(data);
             }
             else if (type == 'xml') {

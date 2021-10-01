@@ -1,4 +1,4 @@
-module.exports = function (RED) {
+module.exports = function(RED) {
     const xlsx = require('xlsx');
     const fs = require("fs-extra");
     const os = require("os");
@@ -7,7 +7,7 @@ module.exports = function (RED) {
     const he = require('he');
     var parents = [];
 
-    function JsonFormatting(X, Y, title, type, y_label) {
+    function JsonFormatting(X, Y, title, type, y_label, nodeConfig) {
         //json formatting
         var result = {
             type: type,
@@ -15,6 +15,9 @@ module.exports = function (RED) {
                 labels: X,
                 datasets: [{
                     label: y_label,
+                    backgroundColor: ((nodeConfig && nodeConfig.backgroundColor) || null),
+                    borderWidth: ((nodeConfig && nodeConfig.borderWidth || null)),
+                    borderColor: ((nodeConfig && nodeConfig.borderColor) || null),
                     data: Y
                 }]
             },
@@ -26,6 +29,16 @@ module.exports = function (RED) {
                 title: {
                     display: true,
                     text: title
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            min: ((nodeConfig && Number(nodeConfig.yMin)) || Math.min.apply(Math, Y)),
+                            max: ((nodeConfig && Number(nodeConfig.yMax)) || Math.max.apply(Math, Y)),
+                            stepSize: ((nodeConfig && Number(nodeConfig.yStepSize)) || null)
+
+                        }
+                    }]
                 }
             }
         }
@@ -118,7 +131,7 @@ module.exports = function (RED) {
         }
     }
 
-    function getRowData(jsonData, title, type, x_data, y_label, y_data) {
+    function getRawData(jsonData, x_data, y_data) {
         var X = [];
         var Y = [];
 
@@ -126,12 +139,11 @@ module.exports = function (RED) {
             X.push(row[x_data]);
             Y.push(row[y_data]);
         }
-        console.log(X);
-        console.log(Y);
-        return JsonFormatting(X, Y, title, type, y_label);
+
+        return { X: X, Y: Y };
     }
 
-    function getOverallStatistics(jsonData, title, type, x_data, y_label, y_data) {
+    function getOverallStatistics(jsonData, y_data) {
         // y데이터의 최대, 최소, 평균 세기
         var total = 0;
         var count = 0;
@@ -150,10 +162,10 @@ module.exports = function (RED) {
         var X = ['min', 'max', 'count', 'total', 'average'];
         var Y = [min, max, count, total, average];
 
-        return JsonFormatting(X, Y, title, type, y_label);
+        return { X: X, Y: Y };
     }
 
-    function getCountByItems(jsonData, title, type, x_data, y_label) {
+    function getCountByItems(jsonData, x_data, y_data) {
         // count the number of x_data items
         var countByItemsJson = {};
 
@@ -164,13 +176,11 @@ module.exports = function (RED) {
                 countByItemsJson[row[x_data]] = 1;
             }
         }
-        var X = (Object.keys(countByItemsJson));
-        var Y = (Object.values(countByItemsJson));
 
-        return JsonFormatting(X, Y, title, type, y_label);
+        return { X: (Object.keys(countByItemsJson)), Y: (Object.values(countByItemsJson)) };
     }
 
-    function getTotalByItems(jsonData, title, type, x_data, y_label, y_data) {
+    function getTotalByItems(jsonData, x_data, y_data) {
         var totalByItems = {};
 
         for (var row of jsonData) {
@@ -181,13 +191,10 @@ module.exports = function (RED) {
             }
         }
 
-        var X = (Object.keys(totalByItems));
-        var Y = (Object.values(totalByItems));
-
-        return JsonFormatting(X, Y, title, type, y_label);
+        return { X: (Object.keys(totalByItems)), Y: (Object.values(totalByItems)) };
     }
 
-    function getAverageByItems(jsonData, title, type, x_data, y_label, y_data) {
+    function getAverageByItems(jsonData, x_data, y_data) {
         var averageByItems = {};
         var countByItems = {};
 
@@ -207,20 +214,50 @@ module.exports = function (RED) {
             averageByItems[key] /= countByItems[key];
         }
 
-        var X = (Object.keys(averageByItems));
-        var Y = (Object.values(averageByItems));
+        return { X: (Object.keys(averageByItems)), Y: (Object.values(averageByItems)) };
+    }
 
-        return JsonFormatting(X, Y, title, type, y_label);
+    function ChartConfig(n) {
+        RED.nodes.createNode(this, n);
+        //if (typeof n.borderColor == "undefined") this.borderColor = gery;
+        this.borderColor = n.borderColor
+        this.borderWidth = n.borderWidth;
+        this.backgroundColor = n.backgroundColor
+        this.yMax = n.yMax;
+        this.yMin = n.yMin;
+        this.yStepSize = n.yStepSize;
+    }
+
+    function stringToNumber(jsonData, y_data) {
+        if (typeof(jsonData[0][y_data]) === 'string' && jsonData[0][y_data].includes(',')) {
+            for (var row of jsonData) {
+                row[y_data] = Number(row[y_data].replace(/,/g, ""));
+            }
+        }
+
+        if (typeof(jsonData[0][y_data]) === 'string') {
+            for (var row of jsonData) {
+                row[y_data] = Number(row[y_data]);
+            }
+        }
+
+        return jsonData;
     }
 
     function DataFormatting(n) {
         RED.nodes.createNode(this, n);
         var node = this;
 
-        node.on('input', function (msg) {
+        node.on('input', function(msg) {
             var type = n.data_type;
-            var jsonData = n.data_src;
-            var data;
+            var jsonData, data, cleanData;
+
+            node.configId = n.config;
+            RED.nodes.eachNode(function(nn) {
+                if (node.configId == nn.id) {
+                    node.config = nn;
+                }
+            });
 
             //data entry
             if (n.data_entry_point === 'path') {
@@ -235,7 +272,6 @@ module.exports = function (RED) {
                     data = xlsx.read(tmp);
                 } else {
                     data = Buffer.from(msg.buffer, "base64").toString('utf8');
-                    console.log(data);
                 }
             } else if (n.data_entry_point === 'string') {
                 data = msg.payload;
@@ -243,35 +279,38 @@ module.exports = function (RED) {
 
             if (type == 'xlsx') {
                 jsonData = XlsxParser(data);
-            }
-            else if (type == 'csv') {
+            } else if (type == 'csv') {
                 jsonData = CsvParser(data);
-            }
-            else if (type == 'xml') {
+            } else if (type == 'xml') {
                 jsonData = XmlParser(data, n.x_data);
                 parents = [];
             }
+            jsonData = stringToNumber(jsonData, n.y_data);
 
             //data formatting
             if (n.result_data_type === 'totalByItems') {
-                msg.data = getTotalByItems(jsonData, n.title, n.chart_type, n.x_data, n.y_label, n.y_data);
+                cleanData = getTotalByItems(jsonData, n.x_data, n.y_data);
 
             } else if (n.result_data_type === 'countByItems') {
-                msg.data = getCountByItems(jsonData, n.title, n.chart_type, n.x_data, n.y_label, n.y_data);
+                cleanData = getCountByItems(jsonData, n.y_data);
 
             } else if (n.result_data_type === 'averageByItems') {
-                msg.data = getAverageByItems(jsonData, n.title, n.chart_type, n.x_data, n.y_label, n.y_data);
+                cleanData = getAverageByItems(jsonData, n.x_data, n.y_data);
 
             } else if (n.result_data_type === 'overallStatistics') {
-                msg.data = getOverallStatistics(jsonData, n.title, n.chart_type, n.x_data, n.y_label, n.y_data);
+                cleanData = getOverallStatistics(jsonData, n.x_data, n.y_data);
 
             } else {
-                msg.data = getRowData(jsonData, n.title, n.chart_type, n.x_data, n.y_label, n.y_data);
+                cleanData = getRawData(jsonData, n.x_data, n.y_data);
             }
 
+            console.log(cleanData);
+
+            msg.data = JsonFormatting(cleanData.X, cleanData.Y, n.title, n.chart_type, n.y_label, node.config);
             node.send(msg);
         })
     }
 
     RED.nodes.registerType("data-formatter", DataFormatting);
+    RED.nodes.registerType("chart-config", ChartConfig);
 }
