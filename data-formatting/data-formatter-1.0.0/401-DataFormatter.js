@@ -9,6 +9,12 @@ module.exports = function (RED) {
 
     function JsonFormatting(X, Y, title, type, y_label, nodeConfig) {
         //json formatting
+	if (typeof(Y[0]) === 'string' && Y[0].includes(',')) {
+            for (var yIndex in Y) {
+                Y[yIndex] = Number(Y[yIndex].replace(/,/g, ""));
+            }
+        }
+		
         var result = {
             type: type,
             data: {
