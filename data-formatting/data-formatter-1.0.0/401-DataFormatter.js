@@ -9,11 +9,6 @@ module.exports = function (RED) {
 
     function JsonFormatting(X, Y, title, type, y_label, nodeConfig) {
         //json formatting
-	if (typeof(Y[0]) === 'string' && Y[0].includes(',')) {
-            for (var yIndex in Y) {
-                Y[yIndex] = Number(Y[yIndex].replace(/,/g, ""));
-            }
-        }
 		
         var result = {
             type: type,
@@ -234,6 +229,15 @@ module.exports = function (RED) {
         this.yStepSize = n.yStepSize;
     }
 
+    function removeComma(jsonData, y_data) {
+        if (typeof(jsonData[0][y_data]) === 'string' && jsonData[0][y_data].includes(',')) {
+            for (var row of jsonData) {
+                row[y_data] = Number(row[y_data].replace(/,/g, ""));
+            }
+        }
+        return jsonData;
+    }
+	
     function DataFormatting(n) {
         RED.nodes.createNode(this, n);
         var node = this;
@@ -277,6 +281,7 @@ module.exports = function (RED) {
                 jsonData = XmlParser(data, n.x_data);
                 parents = [];
             }
+	    jsonData = removeComma(jsonData, n.y_data);
 
             //data formatting
             if (n.result_data_type === 'totalByItems') {
