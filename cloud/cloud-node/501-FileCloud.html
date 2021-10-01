@@ -7,22 +7,18 @@
       clientId: {
         value: "",
         type: "text",
-        required: true,
       },
       clientSecret: {
         value: "",
         type: "text",
-        required: true,
       },
       refreshToken: {
         value: "",
         type: "text",
-        required: true,
       },
       accessToken: {
         value: "",
         type: "text",
-        required: true,
       },
       doType: {
         value: "download",
@@ -43,7 +39,7 @@
     },
     inputs: 1,
     outputs: 1,
-    icon: "",
+    icon: "font-awesome/fa-cloud",
     label: function () {
       return this.name || "File Cloud";
     },
@@ -148,7 +144,7 @@
     <label for="node-input-filePath"
       ><i class="fa fa-folder-o"></i> File Path</label
     >
-    <input type="text" id="node-input-filePath" placeholder="C:\" />
+    <input type="text" id="node-input-filePath" placeholder="C:/" />
   </div>
 </script>
 
@@ -163,8 +159,8 @@
   <p>This node access Google Drive for Download or Upload API</p>
   <h3>Inputs</h3>
   <dl class="message-properties">
-    <dt>Client ID</dt>
-    <dt>Client Secret Key</dt>
+    <h5>Google Drive</h5>
+    <dt>Client ID & Client Secret Key</dt>
     <dd>
       You need to go to the google cloud platform console to get the client ID
       and client secret key. Select your project and go to APIs & Services. And
@@ -182,6 +178,15 @@
       click "Authorize APIs". Connect with your Google account and allow access
       to Google Drive. If it proceeds normally, you will be able to check the
       refresh token.
+    </dd>
+    <h5>One Drive</h5>
+    <dt>Access Token</dt>
+    <dd>
+      <p>To use the OneDrive, you need to have an access token that authorizes your app with a particular set of permissions for a user. 
+      You can get a access token by going to "https://docs.microsoft.com/ko-kr/onedrive/developer/rest-api/getting-started/graph-oauth?view=odsp-graph-online".</p>
+      <p>1. Register your application to get an application ID.</p>
+      <p>2. Sign your user in with the specified scopes using the token flow or code flow.</p>
+      <p>3. The result of the authorization flow will return an access token and optionally other tokens which your app can use to access the API.</p>
     </dd>
     <dt>What to do</dt>
     <dd>You can choose download or upload, read a file.</dd>
