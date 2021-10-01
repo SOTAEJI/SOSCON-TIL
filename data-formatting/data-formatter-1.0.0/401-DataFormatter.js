@@ -15,15 +15,9 @@ module.exports = function(RED) {
                 labels: X,
                 datasets: [{
                     label: y_label,
-<<<<<<< HEAD
                     backgroundColor: ((nodeConfig && nodeConfig.backgroundColor) || "rgba(0, 0, 0, 0.1)"),
                     borderWidth: ((nodeConfig && nodeConfig.borderWidth || null)),
                     borderColor: ((nodeConfig && nodeConfig.borderColor) || "rgba(0, 0, 0, 0.1)"),
-=======
-                    backgroundColor: ((nodeConfig && nodeConfig.backgroundColor) || null),
-                    borderWidth: ((nodeConfig && nodeConfig.borderWidth || null)),
-                    borderColor: ((nodeConfig && nodeConfig.borderColor) || null),
->>>>>>> 4343a7a4e8f7ca6f5c718e889671eba262966482
                     data: Y
                 }]
             },
@@ -40,10 +34,6 @@ module.exports = function(RED) {
                     yAxes: [{
                         ticks: {
                             min: ((nodeConfig && Number(nodeConfig.yMin)) || Math.min.apply(Math, Y)),
-<<<<<<< HEAD
-=======
-                            max: ((nodeConfig && Number(nodeConfig.yMax)) || Math.max.apply(Math, Y)),
->>>>>>> 4343a7a4e8f7ca6f5c718e889671eba262966482
                             stepSize: ((nodeConfig && Number(nodeConfig.yStepSize)) || null)
 
                         }
