@@ -2,6 +2,8 @@ const fs = require("fs");
 const axios = require("axios");
 const mime = require("mime-types");
 
+const apiUrl = "https://graph.microsoft.com/v1.0/me/drive/";
+
 async function download(params) {
   if (!params.accessToken) {
     throw new Error("Missing accessToken");
@@ -15,7 +17,7 @@ async function download(params) {
 
   var options = {
     method: "GET",
-    url: params.apiUrl + "root:/" + encodeURIComponent(params.fileName),
+    url: apiUrl + "root:/" + encodeURIComponent(params.fileName),
     headers: {
       Authorization: "Bearer " + params.accessToken,
     },
@@ -26,7 +28,7 @@ async function download(params) {
   const path = `${params.filePath}/${params.fileName}`;
   var options = {
     method: "GET",
-    url: params.apiUrl + "items/" + fileId + "/content",
+    url: apiUrl + "items/" + fileId + "/content",
     headers: {
       Authorization: "Bearer " + params.accessToken,
     },
@@ -66,7 +68,7 @@ async function upload(params) {
 
   var options = {
     method: "PUT",
-    url: params.apiUrl + "items/root:/" + encodeURIComponent(params.fileName) + ":/content",
+    url: apiUrl + "items/root:/" + encodeURIComponent(params.fileName) + ":/content",
     headers: {
       "Content-Type": mime.lookup(path),
       Authorization: "Bearer " + params.accessToken,
@@ -88,7 +90,7 @@ async function read(params) {
 
   var options = {
     method: "GET",
-    url: params.apiUrl + "root:/" + encodeURIComponent(params.fileName),
+    url: apiUrl + "root:/" + encodeURIComponent(params.fileName),
     headers: {
       Authorization: "Bearer " + params.accessToken,
     },
@@ -98,7 +100,7 @@ async function read(params) {
 
   var options = {
     method: "GET",
-    url: params.apiUrl + "items/" + fileId + "/content",
+    url: apiUrl + "items/" + fileId + "/content",
     headers: {
       Authorization: "Bearer " + params.accessToken,
     },
