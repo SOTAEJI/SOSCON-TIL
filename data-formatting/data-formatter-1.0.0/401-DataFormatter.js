@@ -15,9 +15,9 @@ module.exports = function (RED) {
                 labels: X,
                 datasets: [{
                     label: y_label,
-                    backgroundColor: nodeConfig.backgroundColor,
-                    borderWidth: nodeConfig.borderWidth,
-                    borderColor: nodeConfig.borderColor,
+                    backgroundColor: ((nodeConfig&&nodeConfig.backgroundColor)||null),
+                    borderWidth: ((nodeConfig&&nodeConfig.borderWidth||null)),
+                    borderColor: ((nodeConfig&&nodeConfig.borderColor)||null),
                     data: Y
                 }]
             },
@@ -33,9 +33,9 @@ module.exports = function (RED) {
                 scales: {
                     yAxes: [{
                         ticks: {
-                            min: Number(nodeConfig.yMin),
-                            max: Number(nodeConfig.yMax),
-                            stepSize: Number(nodeConfig.yStepSize)
+                            min: ((nodeConfig&&Number(nodeConfig.yMin))||Math.min.apply(Math, Y)),
+                            max: ((nodeConfig&&Number(nodeConfig.yMax))||Math.max.apply(Math, Y)),
+                            stepSize: ((nodeConfig&&Number(nodeConfig.yStepSize))||null)
 
                         }
                     }]
@@ -220,9 +220,9 @@ module.exports = function (RED) {
     function ChartConfig(n) {
         RED.nodes.createNode(this, n);
         //if (typeof n.borderColor == "undefined") this.borderColor = gery;
-        this.borderColor = n.borderColor;
+        this.borderColor = n.borderColor
         this.borderWidth = n.borderWidth;
-        this.backgroundColor = n.backgroundColor;
+        this.backgroundColor = n.backgroundColor
         this.yMax = n.yMax;
         this.yMin = n.yMin;
         this.yStepSize = n.yStepSize;
