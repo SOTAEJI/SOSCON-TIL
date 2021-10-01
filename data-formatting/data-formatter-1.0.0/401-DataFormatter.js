@@ -15,9 +15,9 @@ module.exports = function (RED) {
                 labels: X,
                 datasets: [{
                     label: y_label,
-                    backgroundColor: ((nodeConfig&&nodeConfig.backgroundColor)||null),
-                    borderWidth: ((nodeConfig&&nodeConfig.borderWidth||null)),
-                    borderColor: ((nodeConfig&&nodeConfig.borderColor)||null),
+                    backgroundColor: ((nodeConfig && nodeConfig.backgroundColor) || "rgba(0, 0, 0, 0.1)"),
+                    borderWidth: ((nodeConfig && nodeConfig.borderWidth || null)),
+                    borderColor: ((nodeConfig && nodeConfig.borderColor) || "rgba(0, 0, 0, 0.1)"),
                     data: Y
                 }]
             },
@@ -33,9 +33,8 @@ module.exports = function (RED) {
                 scales: {
                     yAxes: [{
                         ticks: {
-                            min: ((nodeConfig&&Number(nodeConfig.yMin))||Math.min.apply(Math, Y)),
-                            max: ((nodeConfig&&Number(nodeConfig.yMax))||Math.max.apply(Math, Y)),
-                            stepSize: ((nodeConfig&&Number(nodeConfig.yStepSize))||null)
+                            min: ((nodeConfig && Number(nodeConfig.yMin)) || Math.min.apply(Math, Y)),
+                            stepSize: ((nodeConfig && Number(nodeConfig.yStepSize)) || null)
 
                         }
                     }]
@@ -165,7 +164,7 @@ module.exports = function (RED) {
         return { X: X, Y: Y };
     }
 
-    function getCountByItems(jsonData, x_data, y_data) {
+    function getCountByItems(jsonData, x_data) {
         // count the number of x_data items
         var countByItemsJson = {};
 
@@ -219,11 +218,9 @@ module.exports = function (RED) {
 
     function ChartConfig(n) {
         RED.nodes.createNode(this, n);
-        //if (typeof n.borderColor == "undefined") this.borderColor = gery;
         this.borderColor = n.borderColor
         this.borderWidth = n.borderWidth;
         this.backgroundColor = n.backgroundColor
-        this.yMax = n.yMax;
         this.yMin = n.yMin;
         this.yStepSize = n.yStepSize;
     }
