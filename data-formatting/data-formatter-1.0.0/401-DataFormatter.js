@@ -1,4 +1,4 @@
-module.exports = function (RED) {
+module.exports = function(RED) {
     const xlsx = require('xlsx');
     const fs = require("fs-extra");
     const os = require("os");
@@ -9,16 +9,15 @@ module.exports = function (RED) {
 
     function JsonFormatting(X, Y, title, type, y_label, nodeConfig) {
         //json formatting
-		
         var result = {
             type: type,
             data: {
                 labels: X,
                 datasets: [{
                     label: y_label,
-                    backgroundColor: ((nodeConfig&&nodeConfig.backgroundColor)||null),
-                    borderWidth: ((nodeConfig&&nodeConfig.borderWidth||null)),
-                    borderColor: ((nodeConfig&&nodeConfig.borderColor)||null),
+                    backgroundColor: ((nodeConfig && nodeConfig.backgroundColor) || null),
+                    borderWidth: ((nodeConfig && nodeConfig.borderWidth || null)),
+                    borderColor: ((nodeConfig && nodeConfig.borderColor) || null),
                     data: Y
                 }]
             },
@@ -34,9 +33,9 @@ module.exports = function (RED) {
                 scales: {
                     yAxes: [{
                         ticks: {
-                            min: ((nodeConfig&&Number(nodeConfig.yMin))||Math.min.apply(Math, Y)),
-                            max: ((nodeConfig&&Number(nodeConfig.yMax))||Math.max.apply(Math, Y)),
-                            stepSize: ((nodeConfig&&Number(nodeConfig.yStepSize))||null)
+                            min: ((nodeConfig && Number(nodeConfig.yMin)) || Math.min.apply(Math, Y)),
+                            max: ((nodeConfig && Number(nodeConfig.yMax)) || Math.max.apply(Math, Y)),
+                            stepSize: ((nodeConfig && Number(nodeConfig.yStepSize)) || null)
 
                         }
                     }]
@@ -132,7 +131,7 @@ module.exports = function (RED) {
         }
     }
 
-    function getRowData(jsonData, x_data, y_data) {
+    function getRawData(jsonData, x_data, y_data) {
         var X = [];
         var Y = [];
 
@@ -229,25 +228,32 @@ module.exports = function (RED) {
         this.yStepSize = n.yStepSize;
     }
 
-    function removeComma(jsonData, y_data) {
+    function stringToNumber(jsonData, y_data) {
         if (typeof(jsonData[0][y_data]) === 'string' && jsonData[0][y_data].includes(',')) {
             for (var row of jsonData) {
                 row[y_data] = Number(row[y_data].replace(/,/g, ""));
             }
         }
+
+        if (typeof(jsonData[0][y_data]) === 'string') {
+            for (var row of jsonData) {
+                row[y_data] = Number(row[y_data]);
+            }
+        }
+
         return jsonData;
     }
-	
+
     function DataFormatting(n) {
         RED.nodes.createNode(this, n);
         var node = this;
 
-        node.on('input', function (msg) {
+        node.on('input', function(msg) {
             var type = n.data_type;
             var jsonData, data, cleanData;
 
             node.configId = n.config;
-            RED.nodes.eachNode(function (nn) {
+            RED.nodes.eachNode(function(nn) {
                 if (node.configId == nn.id) {
                     node.config = nn;
                 }
@@ -273,15 +279,13 @@ module.exports = function (RED) {
 
             if (type == 'xlsx') {
                 jsonData = XlsxParser(data);
-            }
-            else if (type == 'csv') {
+            } else if (type == 'csv') {
                 jsonData = CsvParser(data);
-            }
-            else if (type == 'xml') {
+            } else if (type == 'xml') {
                 jsonData = XmlParser(data, n.x_data);
                 parents = [];
             }
-	    jsonData = removeComma(jsonData, n.y_data);
+            jsonData = stringToNumber(jsonData, n.y_data);
 
             //data formatting
             if (n.result_data_type === 'totalByItems') {
@@ -297,7 +301,7 @@ module.exports = function (RED) {
                 cleanData = getOverallStatistics(jsonData, n.x_data, n.y_data);
 
             } else {
-                cleanData = getRowData(jsonData, n.x_data, n.y_data);
+                cleanData = getRawData(jsonData, n.x_data, n.y_data);
             }
 
             console.log(cleanData);
