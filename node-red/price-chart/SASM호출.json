@@ -1,0 +1,30 @@
+[
+  {
+    "id": "a8f5d8d7.558fa8",
+    "type": "capsule-in",
+    "z": "9e43674a.e4e7f8",
+    "icon": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAJlJREFUWEdjlFx64j/DAALGUQeMhsCgD4FiXRmGYl1prPmk9/JTht7LTxhAakA0OYBgLiDGAc+izBlgjiHVEVRzAMhichxBVQeQ4wiqO4BUR9DEAaQ4gioOACVUbGDlvdcMT77+xJsuqeIAUlM+snqKHEDIYmJyxagDRkNgNARGQ2A0BAZ/CBAq7ymVJxgClFpASP+oA0ZDAAAX5u/Bk1z3ZwAAAABJRU5ErkJggg==",
+    "name": "물가",
+    "x": 300,
+    "y": 136.5,
+    "wires": [["b57769dc.b97ed8"]]
+  },
+  {
+    "id": "b57769dc.b97ed8",
+    "type": "capsule-out",
+    "z": "9e43674a.e4e7f8",
+    "message": "",
+    "data": [
+      {
+        "value": "차트보기",
+        "valueType": "str",
+        "urlType": "str",
+        "url": "http://team2.ssafy.dev.devground.io:1880/price"
+      }
+    ],
+    "image": "",
+    "x": 640,
+    "y": 136.5,
+    "wires": []
+  }
+]

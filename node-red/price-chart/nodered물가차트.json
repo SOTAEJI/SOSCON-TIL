@@ -1,0 +1,119 @@
+[
+    {
+        "id": "cc2d59bd217406ee",
+        "type": "tab",
+        "label": "minhwan",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "c9676a3802e0dfdd",
+        "type": "FileCloud",
+        "z": "cc2d59bd217406ee",
+        "name": "",
+        "clientId": "298614016002-vpd5k534dc9fs1op2n5h47rdtnkva4cu.apps.googleusercontent.com",
+        "clientSecret": "cKmfGcsqFM234aA1Knat39Sb",
+        "refreshToken": "1//04kZj2gS8_SkICgYIARAAGAQSNwF-L9IruPep38AnsZFReJuAnnVZOkNNuugwQlYOmbNJTfHsZQ15sJJkUbZCkbn1as8dVNfHXvc",
+        "accessToken": "",
+        "doType": "read",
+        "cloudType": "google",
+        "fileName": "해운대 물가.xlsx",
+        "filePath": "C:\\Download",
+        "x": 260,
+        "y": 280,
+        "wires": [
+            [
+                "9b0aebebdf379690",
+                "ceddeba57d3e3529"
+            ]
+        ]
+    },
+    {
+        "id": "9b0aebebdf379690",
+        "type": "data-formatter",
+        "z": "cc2d59bd217406ee",
+        "config": "c12ee527e4db36aa",
+        "name": "Data Formatter",
+        "title": "해운대 물가",
+        "data_entry_point": "binary",
+        "data_path": "",
+        "data_type": "xlsx",
+        "chart_type": "bar",
+        "result_data_type": "raw",
+        "x_data": "품목",
+        "y_data": "GS수퍼",
+        "y_label": "",
+        "x": 460,
+        "y": 280,
+        "wires": [
+            [
+                "7d02411abf3ad3cc"
+            ]
+        ]
+    },
+    {
+        "id": "c12ee527e4db36aa",
+        "type": "chart-config",
+        "z": "cc2d59bd217406ee",
+        "name": "Chart Config",
+        "borderColor": "rgba(0, 0, 0, 0.1)",
+        "borderWidth": "",
+        "backgroundColor": "rgba(0, 0, 0, 0.1)",
+        "yMin": 0,
+        "yStepSize": "",
+        "x": 310,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "7d02411abf3ad3cc",
+        "type": "html-out",
+        "z": "cc2d59bd217406ee",
+        "name": "",
+        "base": "chart",
+        "datatype": "msg",
+        "datavalue": "data",
+        "brand": "",
+        "video": "",
+        "html": "",
+        "frames": [],
+        "links": {},
+        "x": 670,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "b979972efad02cc3",
+        "type": "http in",
+        "z": "cc2d59bd217406ee",
+        "name": "",
+        "url": "/price",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 80,
+        "y": 280,
+        "wires": [
+            [
+                "c9676a3802e0dfdd"
+            ]
+        ]
+    },
+    {
+        "id": "ceddeba57d3e3529",
+        "type": "debug",
+        "z": "cc2d59bd217406ee",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "data",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 450,
+        "y": 380,
+        "wires": []
+    }
+]
