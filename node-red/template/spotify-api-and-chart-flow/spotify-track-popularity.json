@@ -1,0 +1,133 @@
+[
+    {
+        "id": "7a0eaa04d8a78703",
+        "type": "tab",
+        "label": "spotify",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "873d3da653f8096e",
+        "type": "http request",
+        "z": "7a0eaa04d8a78703",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://api.spotify.com/v1/search?q=iu&type=track&limit=50",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "bearer",
+        "x": 490,
+        "y": 200,
+        "wires": [
+            [
+                "9d9dfc6ffbe27807",
+                "e8087edd706a5fe0"
+            ]
+        ]
+    },
+    {
+        "id": "9d9dfc6ffbe27807",
+        "type": "debug",
+        "z": "7a0eaa04d8a78703",
+        "name": "spotify",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 690,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "4b8d45d64ef2d11d",
+        "type": "inject",
+        "z": "7a0eaa04d8a78703",
+        "name": "spotify",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payloadType": "date",
+        "x": 210,
+        "y": 200,
+        "wires": [
+            [
+                "873d3da653f8096e"
+            ]
+        ]
+    },
+    {
+        "id": "e8087edd706a5fe0",
+        "type": "data-formatter",
+        "z": "7a0eaa04d8a78703",
+        "config": "c12ee527e4db36aa",
+        "name": "spotify",
+        "title": "spotify",
+        "data_entry_point": "string",
+        "data_path": "",
+        "data_type": "json",
+        "chart_type": "bar",
+        "result_data_type": "raw",
+        "x_data": "name",
+        "y_data": "popularity",
+        "y_label": "",
+        "x": 790,
+        "y": 200,
+        "wires": [
+            [
+                "1875b71e184b4a43"
+            ]
+        ]
+    },
+    {
+        "id": "bdb57be16c0fe53b",
+        "type": "http in",
+        "z": "7a0eaa04d8a78703",
+        "name": "spotify",
+        "url": "/song",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 190,
+        "y": 280,
+        "wires": [
+            [
+                "873d3da653f8096e"
+            ]
+        ]
+    },
+    {
+        "id": "1875b71e184b4a43",
+        "type": "html-out",
+        "z": "7a0eaa04d8a78703",
+        "name": "spotify",
+        "base": "chart",
+        "datatype": "msg",
+        "datavalue": "data",
+        "brand": "",
+        "video": "",
+        "html": "",
+        "frames": [],
+        "links": {},
+        "x": 1010,
+        "y": 200,
+        "wires": []
+    }
+]
