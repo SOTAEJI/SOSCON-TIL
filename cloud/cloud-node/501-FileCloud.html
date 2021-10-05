@@ -1,79 +1,78 @@
 <script type="text/javascript">
-  RED.nodes.registerType("FileCloud", {
-    category: "sotaeji",
-    color: "#0099ff",
+  RED.nodes.registerType('FileCloud', {
+    category: 'sotaeji',
+    color: '#0099ff',
     defaults: {
-      name: { value: "" },
+      name: { value: '' },
       clientId: {
-        value: "",
-        type: "text",
+        value: '',
+        type: 'text',
       },
       clientSecret: {
-        value: "",
-        type: "text",
+        value: '',
+        type: 'text',
       },
       refreshToken: {
-        value: "",
-        type: "text",
+        value: '',
+        type: 'text',
       },
       accessToken: {
-        value: "",
-        type: "text",
+        value: '',
+        type: 'text',
       },
       doType: {
-        value: "download",
+        value: 'download',
       },
       cloudType: {
-        value: "google",
+        value: 'google',
       },
       fileName: {
-        value: "",
-        type: "text",
+        value: '',
+        type: 'text',
         required: true,
       },
       filePath: {
-        value: "",
-        type: "text",
-        required: true,
+        value: '',
+        type: 'text',
       },
     },
     inputs: 1,
     outputs: 1,
-    icon: "font-awesome/fa-cloud",
+    icon: 'font-awesome/fa-cloud',
     label: function () {
-      return this.name || "File Cloud";
+      return this.name || 'File Cloud';
     },
     oneditprepare: function () {
-      $("#node-input-doType").on("change", function () {
+      $('#node-input-doType').on('change', function () {
         const val = $(this).val();
         switch (val) {
-          case "read":
-            $("#node-input-filePath-row").hide();
+          case 'read':
+            $('#node-input-filePath-row').hide();
             break;
           default:
-            $("#node-input-filePath-row").show();
+            $('#node-input-filePath-row').show();
         }
       });
-      $("#node-input-cloudType").on("change", function () {
+      $('#node-input-cloudType').on('change', function () {
         const val = $(this).val();
         switch (val) {
-          case "google":
-            $("#node-input-google-clientId-row").show();
-            $("#node-input-google-secretKey-row").show();
-            $("#node-input-google-refreshToken-row").show();
-            $("#node-input-one-row").hide();
+          case 'google':
+            $('#node-input-google-clientId-row').show();
+            $('#node-input-google-secretKey-row').show();
+            $('#node-input-google-refreshToken-row').show();
+            $('#node-input-one-row').hide();
             break;
-          case "one":
-            $("#node-input-google-clientId-row").hide();
-            $("#node-input-google-secretKey-row").hide();
-            $("#node-input-google-refreshToken-row").hide();
-            $("#node-input-one-row").show();
+          case 'one':
+            $('#node-input-google-clientId-row').hide();
+            $('#node-input-google-secretKey-row').hide();
+            $('#node-input-google-refreshToken-row').hide();
+            $('#node-input-one-row').show();
             break;
           default:
-            $("#node-input-google-clientId-row").show();
-            $("#node-input-google-secretKey-row").show();
-            $("#node-input-google-refreshToken-row").show();
-            $("#node-input-one-row").hide();
+            $('#node-input-google-clientId-row').show();
+            $('#node-input-google-secretKey-row').show();
+            $('#node-input-google-refreshToken-row').show();
+            $('#node-input-one-row').hide();
         }
       });
     },
